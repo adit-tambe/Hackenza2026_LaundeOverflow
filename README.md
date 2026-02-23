@@ -48,4 +48,4 @@ The project includes a mobile-first web dashboard built with Flask, featuring:
 Inspired by the research paper: *Chi et al., "U-Flash: Improving Underwater Optical Communication by Scattering Effect," ACM IMWUT, 2024.*
 
 ---
-*Created for Hackathon 2026. This project demonstrates a low-cost, democratization of underwater communication using COTS (Commercial Off-The-Shelf) hardware.*
+*Created for Hackenza 2026. This project demonstrates a low-cost, democratization of underwater communication using COTS (Commercial Off-The-Shelf) hardware.*
