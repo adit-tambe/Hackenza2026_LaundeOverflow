@@ -80,17 +80,15 @@ The central interface is built using a Flask framework, offering a beautiful, mo
 ### 5.3 UI Mockups & Flows
 We designed high-fidelity graphical mockups demonstrating the professional styling of the DeepLink interface.
 
-````carousel
-![Home Dashboard](C:\Users\adits\.gemini\antigravity\brain\d06981de-542d-44a5-803d-19ed74334f30\home_mockup.png)
-<!-- slide -->
-![Transmission Monitor](C:\Users\adits\.gemini\antigravity\brain\d06981de-542d-44a5-803d-19ed74334f30\transmit_mockup.png)
-<!-- slide -->
-![Live Analytics](C:\Users\adits\.gemini\antigravity\brain\d06981de-542d-44a5-803d-19ed74334f30\results_mockup.png)
-````
+<img width="286" height="877" alt="image" src="https://github.com/user-attachments/assets/fc3cd42f-eaf1-4cc8-bc2f-aa3c191ebc0e" />
+<img width="263" height="869" alt="image" src="https://github.com/user-attachments/assets/cd656501-fa0e-4717-9ddd-2287f71b196f" />
+<img width="280" height="874" alt="image" src="https://github.com/user-attachments/assets/c810febe-dd8b-42d8-a8bd-28091838f432" />
+<img width="265" height="873" alt="image" src="https://github.com/user-attachments/assets/736b209f-0e43-4813-93cd-e03c42b4ee49" />
+<img width="266" height="874" alt="image" src="https://github.com/user-attachments/assets/a32e9338-3ed1-4b08-bb01-21df599c83b4" />
+<img width="277" height="878" alt="image" src="https://github.com/user-attachments/assets/44ef1746-3834-4a38-99b0-45fc7fedc388" />
+<img width="266" height="874" alt="image" src="https://github.com/user-attachments/assets/ab96491f-9c52-4b2e-a57c-70ae2a6956e4" />
+<img width="267" height="870" alt="image" src="https://github.com/user-attachments/assets/e7d5d0a1-4bd4-42d9-bccc-8291e589f21b" />
 
-**Live Application Recording (Simulation Engine)**
-The following demonstrates the live, responsive nature of the DeepLink web application running the simulator backend:
-![DeepLink App Navigation](C:\Users\adits\.gemini\antigravity\brain\d06981de-542d-44a5-803d-19ed74334f30\capture_screens.webp)
 
 ---
 
