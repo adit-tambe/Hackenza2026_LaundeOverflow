@@ -1,0 +1,1877 @@
+--- Page 1 ---
+. 
+. 
+Latest updates: hps://dl.acm.org/doi/10.1145/3699769
+. 
+. 
+RESEARCH-ARTICLE
+U-Flash: Improving Underwater Optical Communication by Scaering
+Eﬀect
+YANG CHI, Dalian University of Technology, Dalian, Liaoning, China
+. 
+CHI LIN, Dalian University of Technology, Dalian, Liaoning, China
+. 
+JIE XIONG, University of Massachuses Amherst, Amherst, MA, United States
+. 
+YU SUN, Dalian University of Technology, Dalian, Liaoning, China
+. 
+LEI WANG, Dalian University of Technology, Dalian, Liaoning, China
+. 
+GUOWEI WU, Dalian University of Technology, Dalian, Liaoning, China
+. 
+View all
+. 
+. 
+Open Access Support provided by:
+. 
+University of Massachuses Amherst
+. 
+Dalian University of Technology
+. 
+PDF Download
+3699769.pdf
+18 February 2026
+Total Citations: 0
+Total Downloads: 265
+. 
+. 
+Published: 21 November 2024
+. 
+. 
+Citation in BibTeX format
+. 
+. 
+Proceedings of the ACM on Interactive, Mobile, Wearable and Ubiquitous Technologies, Volume 8, Issue 4 (November 2024)
+hps://doi.org/10.1145/3699769
+EISSN: 2474-9567
+.
+
+
+--- Page 2 ---
+U-Flash: Improving Underwater Optical Communication by Scattering
+Effect
+YANG CHI, School of Software Technology, Dalian University of Technology, China
+CHI LIN∗, School of Software Technology, Dalian University of Technology, China
+JIE XIONG, Microsoft Research Asia, China and University of Massachusetts Amherst, USA
+YU SUN, School of Software Technology, Dalian University of Technology, China
+LEI WANG, School of Software Technology, Dalian University of Technology, China
+GUOWEI WU, School of Software Technology, Dalian University of Technology, China
+XIN FAN, School of Software Technology, Dalian University of Technology, China
+ZHONGXUAN LUO, School of Software Technology, Dalian University of Technology, China
+Underwater communication has been a focal point of communication research, driven by a multitude of applications including 
+underwater facility maintenance and marine exploration. However, current systems often require expensive specialized 
+equipment, rendering them less accessible. In this paper, we break the norm by pioneering the use of Commercial Off-The-Shelf 
+(COTS) smartphones for underwater optical communication, leveraging their built-in flashlight and camera. Contrary to 
+prevalent belief that scattering has a negative impact on communication, we discover that scattering in water can provide a 
+positive gain for camera-based optical communication. Based on this insight, we present and implement U-Flash, a novel 
+system encompassing a Fresnel lens plugin design to enhance light directionality and a tailored encoding-decoding scheme 
+optimized for underwater environments. Comprehensive experiments demonstrate the effectiveness of U-Flash, achieving 
+significant improvements in communication distance, reliability, and data rate. Specifically, the achievable communication 
+distance is improved from 2.4 m to 7.6 m during daytime in the presence of strong ambient light interference and further 
+extended to 9.8 m in low ambient light scenarios at night.
+CCS Concepts: • Human-centered computing → Ubiquitous and mobile computing.
+Additional Key Words and Phrases: Underwater Optical Communication, Mobile Computing, Smartphone
+ACM Reference Format:
+Yang Chi, Chi Lin, Jie Xiong, Yu Sun, Lei Wang, Guowei Wu, Xin Fan, and Zhongxuan Luo. 2024. U-Flash: Improving 
+Underwater Optical Communication by Scattering Effect. Proc. ACM Interact. Mob. W earable Ubiquitous Technol. 8, 4, Article 196 
+(December 2024), 31 pages. https://doi.org/10.1145/3699769
+∗Corresponding author.
+Authors’ Contact Information: Yang Chi, chiyang@mail.dlut.edu.cn, School of Software Technology, Dalian University of Technology,
+Dalian, China; Chi Lin, c.lin@dlut.edu.cn, School of Software Technology, Dalian University of Technology, Dalian, China; Jie Xiong,
+jxiong@cs.umass.edu, Microsoft Research Asia, China and University of Massachusetts Amherst, USA;Yu Sun, yusun.dut@gmail.com, School
+of Software Technology, Dalian University of Technology, Dalian, China; Lei Wang, lei.wang@ieee.org, School of Software Technology,
+Dalian University of Technology, Dalian, China; Guowei Wu, wgwdut@dlut.edu.cn, School of Software Technology, Dalian University of
+Technology, Dalian, China; Xin Fan, xin.fan@dlut.edu.cn, School of Software Technology, Dalian University of Technology, Dalian, China;
+Zhongxuan Luo, zxluo@dlut.edu.cn, School of Software Technology, Dalian University of Technology, Dalian, China.
+Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that
+copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.
+Copyrights for third-party components of this work must be honored. For all other uses, contact the owner/author(s).
+© 2024 Copyright held by the owner/author(s).
+ACM 2474-9567/2024/12-ART196
+https://doi.org/10.1145/3699769
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 3 ---
+196:2 • Chi et al.
+1 INTRODUCTION
+Ocean exploration plays a key role in helping us discover, use, and conserve ocean resources [26, 45, 60]. Although
+robots are capable of performing a lot of underwater tasks, some tasks still require human intervention. For lots of
+underwater activities, human collaboration is required and therefore effective communication between humans
+is of great importance. A large amount of effort has been devoted to underwater communication. Due to the
+extremely severe attenuation [9], RF technologies (e.g., Wi-Fi and LTE) which have achieved great success in the
+air are not suitable for underwater communication. Acoustic-based communication can achieve a relatively long
+distance. However, it requires dedicated devices which are usually expensive and large in size [1, 49]. Therefore,
+even today, divers still rely on hand gestures for short-distance communication in underwater environments [21].
+However, in emergency situations, communication via hand gestures is too slow and hand gestures may also lead
+to fatal ambiguities.
+In today’s digital age, where smartphones have transformed numerous aspects of our daily lives, their potential
+utility in addressing this underwater communication challenge is also studied. Current optical communication
+studies on smartphones mainly adopt the screen light or dedicated LEDs as the signal source and the camera as
+the receiver. However, the communication distance is still limited. The state-of-the-art approaches show that for
+an LED source with a size of 0.4 m× 0.4 m and a smartphone camera receiver, the communication distance is just
+2 m [56]. When using the smartphone screen as the light source and cameras as the receiver, the communication
+distance is merely 0.15 m [47].1
+In this paper, we explore the potential of using smartphone flash and cameras for underwater optical commu-
+nication. Different from existing studies that use screen light as a signal source, we utilize smartphone flashes as
+light source and a camera as the receiver for optical communication. This method exploits the rolling shutter
+effect inherent in image sensors. During reception, the camera first locates the Region of Interest (RoI) where the
+optical signal is present and then decodes data from the RoI [37].
+We discovered several exciting observations induced by unique features of the underwater environment: (1)
+While other signals (e.g., RF signals) can only achieve a small communication distance in water, the smartphone
+flash exhibits a different behavior. (2) The absorption properties of water significantly diminish the background
+light, making the light from the flash more obvious and easier to detect. (3) The scattering effects in water,
+when combined with a camera-based receiver system, can achieve longer communication distances and better
+performance than in air.
+0110101010010011001
+Smartphone Optical
+Communication
+Received Message
+Fig. 1. A system overview of U-Flash. The smartphone flash is used for communication.
+1Note that the well-known OpenVLC system [11] can achieve a longer communication distance because it adopts a high-power LED.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 4 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:3
+Inspired by these observations, for the first time, we utilize just two smartphones, one as the transmitter and
+the other as the receiver, to design and implement an underwater optical communication system based on flash
+and camera, named U-Flash. As shown in Figure 1, divers can realize underwater wireless optical communication
+with smartphones. Our goal is to achieve the following objectives:
+• Portable. We would like the communication device to be lightweight so it can be easily carried by divers
+without incurring extra burden.
+• Works in harsh underwater environment. To be useful in real-world scenarios, we expect the commu-
+nication distance of the proposed system to reach 5-10 m. The proposed system should be able to work
+robustly in harsh real underwater environments.
+• Simultaneous communication and illumination. Considering that divers usually do not have enough
+ambient light for illumination during the process of underwater operations, we expect the light signal used
+in communication can also be used for illumination.
+Developing such an underwater optical communication system with smartphones imposes several challenges.
+(1) Challenge I: Although the scattering effect in an underwater environment helps confine the light beam
+within a smaller zone, resulting in a longer communication distance compared to that in the air, water
+still attenuates the light signal severely, making achieving a meaningful communication range of 5-10 m
+challenging.
+(2) Challenge II: Due to the constant water flow and ambient sunlight interference, the underwater environment
+is very dynamic. During the decoding process, both the RoI and the image brightness vary significantly,
+rendering traditional decoding methods ineffective.
+To address Challenge I, besides the beneficial scattering effect in water, we further design a phone lens plugin
+to increase the light intensity and extend the communication distance. The main component of the lens plugin
+contains one Fresnel lens which is capable of confining the light beam in an even narrow zone. To avoid blocking
+the camera, we design the lens plugin as a periscope shape. The 3-D printed lens plugin has a small size (i.e.,
+5 cm× 5 cm) and is also light in weight (24 grams) owing to the plastic material adopted for its main structure.
+The cost of this lens plugin is around 2.4 dollars.
+To address Challenge II, i.e., the severe underwater dynamics, we propose an encoding and decoding scheme
+optimized for the unique characteristics of the underwater channel. At the transmitter side, we first employ
+an underwater-tailored convolutional code to combat the specific error patterns observed in the underwater
+channel. Then, considering the dramatic variations in signal amplitude and the effect of chromatic dispersion, we
+adopt a dispersion-aware pulse position modulation (PPM) technique that encodes data using the light pulse
+position and adaptively adjusts the pulse positions based on the different propagation delays of each color
+channel. Additionally, we utilize a smartphone camera-aware run-length limited (RLL) coding scheme to mitigate
+the flickering effect caused by the rolling shutter mechanism of smartphone cameras. At the receiver side, we
+develop a threshold-adaptive demodulation algorithm that dynamically adjusts the decision threshold based on
+the local statistics of the received signal, ensuring robust demodulation in the presence of underwater channel
+dynamics and variations in the RoI and image brightness. Furthermore, we propose a dispersion-aware soft-
+decision decoding method that leverages the color dispersion information to generate reliable soft-decision values,
+enhancing the decoding performance. Finally, to tackle the burst errors prevalent in underwater environments,
+we design an underwater-optimized Viterbi decoding algorithm that employs a weighted burst distance metric
+and integrates soft-decision information into the branch metric calculation.
+We conducted experiments in various real underwater environments including sea, lake, and pool to evaluate
+the performance of U-Flash. In a swimming pool, a communication distance of 9.8 m can be achieved while
+in high-turbid seawater, the distance is reduced to 4.8 m. Note that the data rate is dependent on the camera
+frame rate supported by the smartphone. For high-end smartphones such as Xiaomi 14 ($500), we can achieve a
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 5 ---
+196:4 • Chi et al.
+data rate of 1440 bps, while for low-end Redmi smartphone ($100), a data rate of 180 bps can be supported. For
+targeted text and voice transfer, a data rate of 100 bps suffices.
+To summarize, the main contributions of this paper are as follows.
+(1) To the best of our knowledge, this is the first work utilizing smartphones for underwater optical com-
+munication. This work reveals the surprising effect of water scattering on enhancing the performance
+of flash-camera-based underwater optical communication. The proposed scattering model can provide
+insightful guidance for future flash-camera-based underwater communication system design.
+(2) Two interesting observations were identified which we believe can benefit the community: (i) under the
+same setup, a longer communication distance can be achieved in water than that achieved in air for flash-
+camera-based communication; (ii) at a short distance (e.g., 1-2 m), the Bit Error Rate (BER) in high-turbid
+water can be even lower than that achieved in low-turbid water.
+(3) We develop a smartphone lens plugin to increase the communication distance. We propose designs at both
+the transmitter and receiver sides to deal with the high-level dynamics in underwater environments.
+(4) We implement the proposed system and extensively evaluate the system performance in various real-world
+underwater environments, including lake, sea, and pool. The results demonstrate that the proposed system
+is able to achieve robust performance in harsh underwater environments, significantly improving the
+achievable communication distance from 2.4 m to 7.6 m with the proposed plugin design under strong
+ambient light interference during the day, and further extending it to 9.8 m at night.
+2 BACKGROUND AND MOTIVATION
+In this section, we briefly introduce the related background and our motivation.
+2.1 Rolling-Shutter Effect
+The proposed U-Flash system is camera-based, which relies on the rolling-shutter effect to work. This effect, a
+characteristic of complementary metal-oxide-semiconductor (CMOS) sensors [10], forms the cornerstone of our
+underwater communication system.
+The rolling-shutter effect allows each row of the image sensor to be exposed at different times. Figure 2
+illustrates how we leverage this effect in our communication system design. As depicted in the figure, the LED
+status is controlled to generate a signal source alternatively between ‘1’ (ON) and ‘0’ (OFF). When the LED is on,
+the signal source is ‘1’, and when the LED is off, the signal source is ‘0’.
+The image sensor captures the changing light pattern on a per-row basis, with an exposure duration 𝑇𝑒 and
+read-out duration 𝑇𝑟 , respectively. The period 𝑇 represents the duration of one ON or OFF cycle of the LED.
+For rolling-shutter, each row’s exposure duration𝑇𝑒 is followed by its read-out duration. To improve imaging
+efficiency, there is often an overlap between the exposure time of consecutive rows. During the LED ON periods,
+rows exposed to light capture the signal, resulting in bright stripes, while during the LED OFF periods, the rows
+appear darker, resulting in alternating bright and dark stripes. Our system encodes information using the stripes.
+The stripe pattern appears within a specific area of the captured image, known as the RoI, which contains
+the optical signal. Crucially, the size of the RoI directly impacts the data rate: a larger RoI can accommodate
+more stripes, thereby allowing more bits to be transmitted per frame. For instance, in Figure 3(a), a smaller RoI
+contains fewer stripes, limiting the amount of data that can be encoded (e.g., a short bit sequence ‘10010’). On the
+other hand, Figure 3(b) shows a larger RoI with more stripes, enabling a longer bit sequence ‘110100101101’ to be
+transmitted within one frame. This observation indicates one objective for optical camera communication (OCC)
+systems: maximizing the RoI size. By expanding the RoI, we can effectively increase the number of stripes per
+frame, thus increasing the data rate [52].
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 6 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:5
+Signal 
+Source
+LED 
+Status
+Exposure Duration
+Striped 
+Image
+Time
+Image Column
+T
+…
+Te Tr
+Te Tr
+On OnOff
+1 0 1 0
+Off
+…
+Te Tr
+Te Tr
+…
+Te Tr
+Te Tr
+…
+Te Tr
+Te Tr
+Te Read-out DurationTr
+1 0 1 0
+Fig. 2. Basic principle of RoI in optical camera com-
+munication.
+Small ROI with less data
+1
+0
+0
+1
+0
+5 bits data
+ROI
+(a)
+Large ROI with more data
+ROI
+12 bits data
+1
+1
+0
+1
+0
+0
+1
+0
+1
+1
+0
+1
+(b)
+Fig. 3. Relationship between RoI size and stripe count in optical
+camera communication.
+While the rolling-shutter effect enables the proposed communication scheme to work, it can also introduce
+rolling-shutter artifacts when there are dynamics in the environment, which is quite common in underwater
+scenarios. The rolling-shutter artifacts lead to image distortions and accordingly corrupted light signals, affecting
+the performance of communication. Our U-Flash system addresses these challenges through adaptive threshold
+demodulation and dispersion-aware soft-decision decoding, which help mitigate the effects of rolling shutter
+artifacts in dynamic underwater environments. We present the detailed description of these techniques in
+Section 4.
+2.2 Scattering Effect of Water
+In water, light primarily undergoes two optical phenomena: absorption and scattering. Absorption refers to the
+process in which water molecules absorb light, thereby reducing its intensity. The scattering effect, however,
+causes the deviation of light direction as a result of interactions with water molecules and particles. In underwater
+optical communication, understanding the scattering phenomenon is crucial. The nature of scattering in water
+varies with the size of the suspended particles. Two major types of scattering exist: Mie scattering and Rayleigh
+scattering.
+Mie scattering [ 34]. This type of scattering occurs when the size of the scattering particles is comparable to
+or larger than the light’s wavelength. In Mie scattering, the scattering is more obvious in the forward direction
+than in the backward direction, causing a clear directionality. Mie scattering is more obvious in underwater
+communications because there are large particles in wild water, which is absent in air. Therefore, in water, optical
+communication has stronger directionality. On the other hand, in air, light diverges in all directions.
+Rayleigh scattering [ 17]. It occurs when the particles are much smaller than the light’s wavelength, such as
+tiny suspended particles or the water molecules themselves. It disperses light in all directions. For camera-based
+optical communication, this scattering expands the RoI. An enlarged RoI allows for encoding more data bits per
+image frame, resulting in a higher data transmission rate.
+Absorption effect [50]. In camera-based optical communication, the absorption properties of water minimize
+background light interference, enhancing contrast and signal detectability compared to air. However, it also
+causes significant reduction in light intensity.
+In this work, we aim to smartly leverage the unique properties of the underwater environment to achieve a
+longer communication distance and a higher data rate.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 7 ---
+196:6 • Chi et al.
+3 UNDERWATER SCATTERING EFFECT MODELING AND ANALYSIS
+In this section, we present a system-oriented analysis of underwater scattering effects on smartphone-based
+optical communication. We focus on how Mie and Rayleigh scattering phenomena impact our system parameters
+and performance metrics, i.e., RoI size, communication range, and BER. Through a combination of theoretical
+modeling, simulations, and real-world experiments, we show that understanding these scattering effects guides
+our system design choices and helps improve U-Flash performance in various underwater conditions.
+3.1 Scattering Model
+In underwater environments, light propagation is significantly affected by scattering, which occurs when light
+interacts with particles in water. Understanding this scattering effect is crucial for developing effective underwater
+optical communication systems.
+We consider two primary types of scattering in our model: Mie scattering and Rayleigh scattering. Mie
+scattering occurs when light interacts with particles with a size comparable to or larger than the wavelength
+of light (e.g., those suspended sediments in water). A key feature of Mie scattering is the strong directionality
+of the scattered light in the forward direction [2]. As show in Figure 4(a), the scattering effect in water helps
+concentrate photons in the direction of light propagation, compared to the broader dispersion in air.
+Rayleigh scattering, on the other hand, occurs when light interacts with particles with a size much smaller than
+its wavelength (e.g., water molecules). Unlike Mie scattering, Rayleigh scattering results in a distribution of light
+power in all directions [57]. Figure 4(b) shows that Rayleigh scattering results in a more uniform distribution of
+photons, with slight intensification in the forward and backward directions.
+(a) (b)Forward
+Fig. 4. Mie (a) and Rayleigh (b) scattering patterns.
+We model the light attenuation in underwater environments using the extinction coefficient 𝑐 [50], which
+comprises two components:
+𝑐 = 𝑎 + 𝑏, (1)
+where 𝑎 is the absorption coefficient and 𝑏 is the scattering coefficient. The scattering coefficient𝑏 accounts for
+both Mie and Rayleigh scattering:
+𝑏 = 𝑏Mie + 𝑏Rayleigh. (2)
+The detailed derivations of 𝑏Mie and 𝑏Rayleigh, along with their dependencies on water properties, can be found
+in Appendix A.
+3.2 Impact on RoI Size & Communication Distance
+The scattering effect in underwater environments significantly influences the RoI size and communication
+distance in optical communication systems. Our analysis reveals that underwater environments, contrary to
+initial expectations, can provide unique advantages for optical communication compared to air.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 8 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:7
+We propose a model for RoI size calculation that takes into account both direct and scattered light:
+RoI(𝑑) = 2𝜋 (𝜎0 + 𝑘𝑑 𝛼 )2 · (1 − exp(−𝑏𝑑)) · 𝐻 (𝐼total (𝑑) − 𝐼𝑡ℎ ), (3)
+where 𝑑 is the propagation distance, 𝑘 is the scattering-dependent spreading factor, 𝛼 is the non-linear scattering
+exponent (0 < 𝛼 < 1), 𝐻 () is the Heaviside step function [23], 𝐼total (𝑑) is the total light intensity at distance 𝑑, and
+𝐼𝑡ℎ is the camera sensitivity threshold.
+The total light intensity 𝐼total (𝑑) is calculated as the sum of direct and scattered light intensities:
+𝐼total (𝑑) = 𝐼direct(𝑑) + 𝐼scattered(𝑑), (4)
+where
+𝐼direct(𝑑) = 𝐼0 ·exp(−𝑐𝑑)/( 𝜎0 + 𝑘𝑑 𝛼 )2, (5)
+and
+𝐼scattered(𝑑) = 𝐼0 ·𝑏 ·exp(−𝑐𝑑) · (1 − exp(−𝑏𝑑))/( 𝜎0 + 𝑘𝑑 𝛼 )2, (6)
+where 𝐼0 is the initial light intensity. The detailed derivation of these equations can be found in Appendix B.
+We validate our RoI size analysis through both simulation and experiments. Figure 5 illustrates the simulated
+RoI sizes as a function of distance for air, pool, and lake. Notably, the RoI size in air diminishes rapidly, disappearing
+at distances beyond one meter. In contrast, the RoI sizes are sustained over larger distances in pool and lake, with
+lake displaying an even larger RoI at a short distance due to the larger scattering effect. This simulation clearly
+shows that camera-based optical communication performs better in underwater environments compared to that
+in air.
+To consolidate the simulation results, we conducted experiments in both air and real underwater environments,
+including a pool and a lake. In the experiments, the RoI sizes were obtained using a combination of edge detection
+and thresholding techniques [46]. Figure 6 presents a comparative analysis of the RoI sizes at distances of 0.1–5
+m for air, pool, and lake. The experimental results reveal a notable quick decrease of RoI size in air, with the RoI
+vanishing beyond 0.3 m. On the other hand, the decrease of RoI in water environments is more gradual, with
+both pool and lake maintaining detectable RoI sizes up to 5 m. These results align with our simulation findings
+well, confirming that underwater environments provide a larger RoI compared to air. The larger RoI not only
+increases the data rate for camera-based optical communication but also extends the effective communication
+range in underwater environments.
+0.1 1 2 3 4 5
+Distance (m)
+0
+25
+50
+75
+100
+125
+150
+175
+200RoI size (pixel)
+Air
+Pool
+Lake
+Fig. 5. Simulated RoI sizes in different environments.
+0.1 0.2 0.3 1 2 3 4 5
+Distance (m)
+0
+25
+50
+75
+100
+125
+150
+175
+200RoI size (pixel)
+Air
+Pool
+Lake
+Fig. 6. Experimental RoI sizes in different environ-
+ments.
+The counterintuitive longer communication range in water is mainly owing to Mie scattering effect and the
+unique characteristics of the receiver, i.e., a smartphone camera in our system. On one hand, the Mie scattering
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 9 ---
+196:8 • Chi et al.
+effect can greatly enhance the directionality of the light signal. On the other hand, compared to the conventional
+photodiode (PD)[27], the camera, serving as the receiver, has a larger effective area (i.e., 20-100 mm2 vs. 1-3 mm2)
+and a higher sensitivity [14]. This larger area and higher sensitivity help capture the Mie-scattered signals. In
+a conventional PD-based system, although Mie scattering effect exists, the smaller area and lower sensitivity
+limit the effectiveness of reception of scattered light. Therefore, the longer communication range achieved by the
+proposed system is the synergistic effect of the scattering effect and the camera-based receiver design.
+This larger RoI in underwater environments presents both opportunities and challenges for our U-Flash system.
+On one hand, it increases the data rate capacity by allowing more information to be transmitted in a single frame.
+On the other hand, it introduces increased inter-symbol interference due to light spreading, causing blurring
+between adjacent data symbols, and reduces the signal-to-noise ratio as the signal intensity decreases when the
+light is spread over a larger area. These trade-offs necessitate careful system design and optimization to maximize
+the benefits while mitigating the drawbacks of the enlarged underwater RoI.
+3.3 Impact on Bit Error Rate
+While scattering effects help increase the size of RoI and enhance signal directionality, they also cause inter-
+symbol interference (ISI) [16], potentially increasing the likelihood of bit errors. To comprehensively assess the
+impact of scattering on BER, we develop an extended BER model that incorporates both the beneficial (increased
+directionality) and detrimental effects of underwater light propagation [12]:
+BER(𝑑) = 1
+2 ·erfc
+ √
+SNR
+1 + 𝑐𝑑/5 + 𝑏𝑑/10
+!
+, (7)
+where SNR is the signal-to-noise ratio, and erfc denotes the complementary error function, which is commonly
+used in digital communication to model error probabilities in Gaussian noise channels [ 43]. The SNR can be
+calculated as:
+SNR = 𝐼total(𝑑)
+𝑁0 + 𝐼ISI(𝑑) , (8)
+where 𝑁0 is the noise power spectral density, and 𝐼ISI(𝑑) represents the interference due to ISI, modeled as [51]:
+𝐼ISI(𝑑) = 𝛾𝑏𝑘𝑑 ·𝐼total (𝑑), (9)
+where 0.1 < 𝛾 < 1 is a scaling factor.
+To validate our BER analysis, we perform Monte Carlo simulations [7] and experiments. In the simulation,
+we generate random bit sequences, add noise, and compute the BER for different SNRs and water conditions.
+Figure 7 shows the simulated BER for pool and lake, indicating a higher BER in lake due to increased ISI caused
+by scattering. Interestingly, our results reveal that at short distances (e.g., < 2 m), the BER in lake water can
+be even lower than that in pool water. This phenomenon can be explained by two factors. First, the increased
+scattering in lake water leads to a wider distribution of light signals. Second, the camera used as a receiver has a
+very high sensitivity (typically around 10−9 W/cm2), enabling it to effectively detect these scattered light signals.
+The combination of these two factors results in an enhanced signal reception at short distances, leading to a
+lower BER in lake water. However, as the distance increases beyond 2 m, the BER in lake water becomes higher
+than in pool water due to the dominance of signal attenuation.
+In the experiments, we transmit predefined bit sequences using a smartphone flash and receive the signal
+from another smartphone’s camera. We calculate the BER by comparing the received bits with the transmitted
+bits. The detailed parameters used in simulations and experiments are provided in Table ??. Figure 8 presents
+the experimental BER for different water conditions, matching the simulation results well and validating the
+correctness of our theoretical BER analysis.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 10 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:9
+0 1 2 3 4 5 6
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+pool
+lake
+Fig. 7. Simulated BER for pool and lake.
+0.1 1 2 3 4 5
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+Pool
+Lake Fig. 8. Experimental BER for pool and lake.
+The simulation and experimental results highlight the impact of scattering on BER. Moreover, the dynamic
+nature of the underwater environment, characterized by water flow and ambient light fluctuations, poses additional
+challenges to maintaining a reliable communication link. These factors can lead to rapid variations in the RoI and
+image brightness, resulting in higher BERs.
+To improve the system’s reliability in such a dynamic underwater environment, we propose an encoding
+scheme that combines underwater-optimized convolutional coding, dispersion-based PPM, and smartphone
+camera-aware RLL coding. At the receiver, we develop a novel decoding scheme that integrates adaptive threshold
+demodulation, dispersion-aware soft-decision decoding, and underwater-optimized Viterbi decoding, which will
+be discussed in detail in the following sections.
+4 SYSTEM DESIGN
+The U-Flash system enables underwater optical communication between divers using COTS smartphones, as
+illustrated in Figure 9. The system leverages the smartphone’s built-in flashlight as the transmitter and the camera
+as the receiver, along with the custom-designed Fresnel lens plugin to enhance the communication range and
+reliability.
+Start
+Text Message
+Encode
+STT
+Binary 
+Sequence
+Hello!
+Transmitter
+Voice Message
+Receiver
+Image Processing Decode
+Text MessageVoice MessageFinish
+Binary 
+Sequence
+TTS
+Hello!
+Underwater Optical
+Communication
+Flashlight
+Camera
+Fig. 9. System components of U-Flash.
+4.1 System Overview
+The U-Flash system consists of three main components: (1) a transmitter module that encodes the input data and
+modulates the smartphone flashlight, (2) a receiver module that captures the optical signals using the smartphone
+camera and decodes the received data, and (3) a user interface that allows divers to input and display messages
+conveniently.
+At the transmitter end, the user’s speech is converted into text using an offline speech-to-text (STT) model
+from IFLYTEK [58]. The text is then encoded into a binary string to modulate the smartphone’s LED flashlight.
+At the receiver end, the flashing LED light is captured by the smartphone camera as bright and dark stripes. The
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 11 ---
+196:10 • Chi et al.
+Table 1. User interface interactions.
+Volume+ Volume-
+Main Interface Single Click → Transmitter Interface Single Click → Receiver Interface
+Transmitter Interface Single Click: Start Recording Single Click: Send Message
+Double Click: Return to Main Interface
+Receiver Interface Single Click: Return to Main Interface Single Click: Start/Stop Receiving
+stripe pattern is decoded to recover the binary string, which is then mapped back to the original text message
+using the inverse encoding scheme. Finally, a text-to-speech (TTS) model synthesizes the decoded text into voice
+message, which is played back to the diver through earphones.
+The key reason we employ voice messages as input is the difficulty of using touch screen in underwater
+environments. The water pressure severely impairs the accuracy and sensitivity of the smartphone’s touch
+screen [25]. The diving equipment, such as the diving glove, also limits the dexterity of our fingers for screen
+input. Therefore, our design adopts voice input together with the smartphone’s physical buttons (i.e., volume-up
+and volume-down keys on the side) for data transmission. The speaking capability of a human remains relatively
+unaffected in underwater environments. The physical button can still work well when the user wears diving
+gloves. Related operations on smartphones are listed in Table 1.
+To efficiently process and transmit data underwater, our system employs novel encoding and decoding
+algorithms tailored to the unique challenges of this environment, as illustrated in Figure 10.
+Binary data:
+[1, 1, 0, 0, 0, …]
+Voice signal
+Enhance error
+ resilience
+Conv. 
+Coding
+PPM 
+Modulation
+RLL 
+Coding
+Pulse-position 
+light signal
+Reduce 
+flickering
+Adaptive Threshold 
+Demodulation
+Underwater-optimized 
+Viterbi Decoding
+Dispersion-aware Soft-
+decision Decoding
+Binarize
+ image
+Enhance 
+contrast
+Extract
+ data
+Encoding process Decoding processInput
+Received image
+Output
+Binary data:
+[1, 1, 0, 0, 0, …]
+Voice signal
+Fig. 10. Flowchart of the encoding and decoding algorithms.
+In the encoding process, the input voice signal is first converted into binary data. This binary data then
+undergoes convolutional coding to enhance error resilience, followed by RLL coding to reduce the chance of
+flickering on the transmitted light signal. Finally, the data is modulated using the PPM scheme to create a
+pulse-position light signal. In the decoding process, the captured image is first binarized using the proposed
+adaptive threshold demodulation scheme. Next, dispersion-aware soft-decision decoding enhances the contrast
+of the binarized image. Finally, the modified version of Viterbi decoding tailored for underwater environments
+extracts the original binary data from the enhanced contrast image. The final output is the decoded binary data,
+ready for further processing back to text or voice.
+4.2 Problem Description
+According to Section 3, although the scattering effect can enhance the light directionality to some extent, the
+communication range is still limited.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 12 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:11
+To extend the communication range, we need to further enhance the directionality of the transmitted light to
+reduce the divergence angle. To achieve this objective, the proposed system adopts the smartphone flashlight as
+the signal source. While no dedicated signal source is required, the flashlight was not designed for communication
+and has a relatively wide divergence angle. We thus develop the Fresnel lens plugin to increase the communication
+range from around 5 m to 9.8 m. Fresnel lens is a cheap and simple design widely used in lighthouses and solar
+concentrators [22, 55]. It offers several advantages that are beneficial for the proposed underwater communication
+system:
+(1) High light concentration capability: Fresnel lens can effectively focus divergent light from smartphone
+flashlight, increasing the communication range.
+(2) Compact and lightweight design: Compared to conventional concave or convex lenses, which are thick and
+heavy, the Fresnel lens maintains the concentration capability with a thin, flat and lightweight (24 grams),
+crucial for underwater maneuverability.
+(3) High flexibility: Fresnel lens can be easily customized to achieve specific focal lengths and light distribution
+patterns, adapting to diverse real-world needs.
+(4) Cost-effectiveness: The price of the Fresnel lens is low, which is only slightly higher than the concave or
+convex lens, making it suitable for widespread adoption. Our customized Fresnel lens design only costs $2
+and the price can be further reduced for mass production.
+(5) Universality: one design can accommodate most smartphone camera layouts. Our simple design can be
+used with most mainstream smartphones, including iPhone, Samsung Galaxy, and Xiaomi phones.
+4.3 Fresnel Lens Plugin Design
+In our U-Flash system, we utilize the focusing properties of Fresnel lenses to mitigate the constraints of smartphone 
+flashlights and facilitate long-distance underwater communication. W e design and implement a  compact and 
+portable lens plugin that incorporates a Fresnel lens to concentrate the light emitted by the smartphone flashlight 
+into a highly focused light beam, as illustrated in Figure 11(a). This focused light beam demonstrates enhanced 
+directionality, which is pivotal for extending the communication range in underwater environments.
+The detailed structure of the proposed lens plugin is depicted in Figure 11(b). To achieve light focus without 
+blocking the smartphone camera’s field of view, a periscopic structure is adopted. A  square Fresnel lens with a 
+side length of 44 mm and a focal length of 80 mm is integrated, allowing for precise focusing of the flashlight 
+beam. The input port, which features a square glass pane, is closely aligned with the built-in flashlight, while two 
+mirrors angled at 45◦ direct the beam through the Fresnel lens output as a focused light beam. This design ensures 
+that light is concentrated into a narrow beam, significantly enhancing its directionality for communication 
+purposes. The lens plugin can be seamlessly attached to the back cover of the smartphone, aligning the input 
+port with the built-in flashlight. The incident light undergoes a series of reflections and is output from the Fresnel 
+lens as a focused light beam.
+4.4 Lens Plugin Implementation and Optimization
+To implement the proposed design in Section 4.3, we first fabricated a  proof-of-concept prototype of the lens 
+plugin using 3D printing technology [8]. In contrast to the conventional use of Fresnel lenses for beam shaping in 
+existing works [4, 28, 38], our lens assembly is specifically tailored for smartphones. Firstly, a periscopic structure 
+is adopted, ensuring that the added plugin does not obstruct the camera’s field of view. Secondly, the device is 
+very portable, weighing only 24 grams. Additionally, the lens is made of epoxy resin, a high-strength material, 
+and it can resist water pressure of 70-120 megapascals, which can theoretically work at a depth of 100 meters.
+However, light can penetrate into the resin material, leading to optical loss that can eventually decrease the 
+light intensity. To address this issue, we develop a coating scheme. As depicted in Figure 11(c), we first spray a
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 13 ---
+196:12 • Chi et al.
+Fresnel lens
+Mirror 1
+Mirror 2
+Transparent glass
+Incident light
+(a) (b)
+(Focal length: 80mm)
+45° 45°
+(c)
+44mm
+40mm
+23mm
+50mm
+50mm
+Fig. 11. Lens plugin design: (a) exploded view; (b) internal structure; and (c) coating.
+layer of green primer paint to prevent light penetration. Then, we apply a reflective top coat to create a mirror-like
+finish, enhancing the inner wall’s reflectivity. Finally, we seal all joints with waterproof adhesive to achieve
+water resistance and airtightness. Through this coating scheme, we eliminate light leakage and improve the light
+intensity.
+To show the effectiveness of the proposed design, we compare the light intensity of a standalone smartphone
+flash with that achieved with the uncoated/coated lens plugins. The uncoated lens plugin enhanced the light
+intensity of the smartphone’s original flashlight from 251 lux to 2350 lux, an increase of approximately836%. The
+coated lens plugin further enhances the effect, raising the light intensity to 3175 lux, which represents a total
+improvement of about 1160%.
+The delicate designs of the lens plugin, including the periscopic structure, portable design, high-strength
+material, and coating scheme, ensure that the U-Flash system can increase the communication range in practical
+underwater scenarios. The lens plugin can be adapted to various smartphone models, providing a universal
+solution for underwater optical communication using smartphones. However, while the Fresnel lens plugin
+greatly extends the communication range, the underwater channel still poses significant challenges due to its
+unique characteristics, such as severe absorption, scattering, and turbulence. These factors can lead to bit error
+and reduced reliability, especially over longer distances. To further enhance the system’s robustness and efficiency,
+we propose novel encoding and decoding schemes that are specifically tailored to the underwater environment
+and the smartphone camera receiver.
+4.5 Encoding Scheme
+At the transmitter, we propose an encoding scheme that combines underwater-optimized convolutional coding,
+smartphone camera-aware RLL, and dispersion-based PPM to enhance the reliability and efficiency of underwater
+optical communication.
+4.5.1 Underwater-optimized Convolutional Coding. We design a convolutional code tailored to the unique
+characteristics of the underwater channel. The code design is based on the error patterns obtained from Monte
+Carlo simulations of underwater light propagation. The simulations take into account various factors including
+water type, propagation distance, and receiver aperture size.
+We model the propagation of photons in underwater environments using the Monte Carlo method. The
+photon’s path is tracked through an iterative process, where the initial position and direction of a photon are
+denoted as r0 and v0, respectively:
+r𝑖+1 = r𝑖 + 𝑑𝑖 v𝑖, 𝑖 = 0, 1, . . . , 𝑁 − 1, (10)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 14 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:13
+where 𝑑𝑖 represents the free path length between the𝑖-th and (𝑖 + 1)-th scattering events, following an exponential
+distribution with parameter 𝑧:
+𝑝 (𝑑𝑖 ) = 𝑧𝑒 −𝑧𝑑𝑖 . (11)
+After each scattering event, the photon’s direction changes randomly according to the phase function
+𝑝 (v𝑖, v𝑖 + 1), which describes the probability of direction change during scattering. A commonly used phase
+function is the Henyey-Greenstein function [29]:
+𝑝 (v𝑖, v𝑖 + 1) = 1 − 𝑔2
+4𝜋 (1 + 𝑔2 − 2𝑔 cos 𝜃 )3/2 , (12)
+where 𝑔 is the anisotropy factor, and 𝜃 is the scattering angle.
+By performing Monte Carlo simulations for a large number of photons, we obtain the statistical characteristics
+of the received signal, such as the distribution of error burst lengths and error-free intervals. We then model the
+underwater channel as a Markov process using an error graph, as shown in Figure 12. Each state 𝑆𝑖 represents
+the length of the current error burst, and the transition probability 𝑝𝑖 𝑗 represents the likelihood of moving from
+the current burst length 𝑆𝑖 to the next length 𝑆 𝑗.
+For instance, consider the error graph model depicted in Figure 12. Each state 𝑆𝑖 represents a different error
+burst length encountered in underwater communication. Initially, a photon may start at state 𝑆0, indicating no
+errors. As it propagates in the water, scattering events may introduce errors, causing transitions to states of
+higher error bursts. For example, the transition from 𝑆0 to 𝑆1 occurs with a probability of 50%, indicating the
+occurrence of a single-bit error. This model allows us to understand and predict the behavior of error patterns in
+the channel, laying the foundation for the communication protocol design.
+In the decoding process, the decoder aims to find the most likely transmitted path based on the received
+path. However, due to channel noise, the received path may differ from the correct path, leading to potential
+decoding errors. The likelihood of these errors depends on the Hamming distance between the correct path and
+the erroneous path. We derive the error path enumerator 𝐴(𝑋 ) of the convolutional code based on the error
+graph model. 𝐴(𝑋 ) is a polynomial where the coefficient of the term 𝑋 𝑖 represents the number of error paths
+with Hamming distance 𝑖 from the correct path:
+𝐴(𝑋 ) =
+∞∑︁
+𝑖=0
+𝑎𝑖𝑋 𝑖, (13)
+where 𝑎𝑖 is the number of error paths at Hamming distance 𝑖. The decoder compares the received path with all
+possible paths and selects the one with the minimum Hamming distance.
+To minimize the probability of decoding errors, we design the convolutional code by selecting the generator
+polynomial that minimizes the coefficients of the low-degree terms in 𝐴(𝑋 ). This reduces the number of error
+paths with low Hamming distances, making it less likely for the decoder to confuse the received path with these
+erroneous paths.
+4.5.2 Smartphone Camera-Aware RLL Coding. To mitigate flickering, we propose an adaptive RLL coding scheme
+where the parameters (𝑑𝑅𝐿𝐿, 𝑘𝑅𝐿𝐿 ) adapt to the ambient light intensity 𝐼 as:
+𝑑𝑅𝐿𝐿 = 𝑓 (𝐼𝑎𝑚𝑏), 𝑘 𝑅𝐿𝐿 = 𝑔(𝐼𝑎𝑚𝑏). (14)
+In RLL coding, 𝑑𝑅𝐿𝐿 and 𝑘𝑅𝐿𝐿 denote the minimum and maximum run lengths of zeros between consecutive
+ones, respectively. The 𝑑𝑅𝐿𝐿 constraint limits the code’s one density to prevent extended high-brightness periods
+that cause flickering. Conversely, 𝑘𝑅𝐿𝐿 bounds the zero density, avoiding prolonged low-brightness that also
+triggers flickering.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 15 ---
+196:14 • Chi et al.
+S2 S1
+S0S3
+S4 S5
+30%
+50%
+10%
+20%
+50%
+5%
+80% 95%
+70%
+90%
+Fig. 12. Error graph model with burst
+lengths and transition probabilities.
+0 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+1
+2
+3
+4
+5
+6
+7
+8Dispersion (ns/m)
+Pool
+Sea
+Lake
+Fig. 13. Typical dispersion for different
+water types and distances.
+Pool Sea Lake
+Water Type
+1.0×10−3
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+Fixed-slot PPM
+Dispersion-compensated PPM
+Fig. 14. BER comparison of compen-
+sated and fixed-slot PPM modulations.
+The mapping functions 𝑓 (·) and 𝑔(·) are designed based on the camera’s gamma response [42] and the human
+visual system’s brightness perception governed by Weber’s law [33, 54]. Specifically, to avoid noticeable flickering,
+the brightness fluctuation Δ𝐼 must satisfy:
+𝐴[( 𝐼 + Δ𝐼 )𝛾𝑐𝑎𝑚 − (𝐼 )𝛾𝑐𝑎𝑚 ]
+𝐴𝐼𝛾𝑐𝑎𝑚
+= 𝑘1√
+𝐼
++ 𝑘2, (15)
+where 𝐴 is the camera gain coefficient representing the efficiency of converting light to electrical signals,𝛾𝑐𝑎𝑚
+is the camera’s gamma correction factor typically ranging from 1.8 to 2.2,𝑘1 is the Weber-Fechner law scaling
+factor reflecting sensitivity to brightness changes, and 𝑘2 is the Weber-Fechner law offset term representing the
+baseline perception level. The functions 𝑓 (𝐼𝑎𝑚𝑏) and 𝑔(𝐼𝑎𝑚𝑏), with 𝐼𝑎𝑚𝑏 being the ambient light intensity, ensure
+the coded path’s 0/1 distribution meets the constraint [24], preventing flickering while maximizing the data rate.
+Under dim illumination where the eye is more sensitive to brightness fluctuations, larger 𝑑𝑅𝐿𝐿 and smaller
+𝑘𝑅𝐿𝐿 values yield a more uniform one/zero distribution in the coded data. This reduces the chance of consecutive
+0/1 and abrupt brightness changes that cause flickering. In brighter environments with lower eye sensitivity,
+smaller 𝑑𝑅𝐿𝐿 and larger 𝑘𝑅𝐿𝐿 can be used.
+4.5.3 Dispersion-based PPM. In optical communications, dispersion refers to the phenomenon where different
+wavelengths of light travel at different speeds through a medium, leading to phase and timing differences. This
+effect can significantly degrade the performance of PPM schemes due to overlap between signals intended
+for separate time slots, resulting in increased error rates. To combat the dispersion effect in the underwater
+channel, we propose a dispersion-compensated PPM scheme. We measure the propagation delays of different
+color channels using the smartphone camera’s RGB sensor. Based on the measured delays, we build a dispersion
+compensation model to predict the arrival time of each color channel:
+ˆ𝑡 𝜒 = 𝑡0 + Δ𝑡 𝜒, , 𝜒 ∈ { 𝑅, 𝐺, 𝐵}, (16)
+where 𝑡 𝜒 is the receiving time of color channel 𝜒, and 𝑡0 is the reference time.
+For PPM modulation, the slot boundaries are dynamically adjusted according to the predicted arrival time:
+𝛽𝑖 =
+ˆ𝑡 𝜒,𝑖 + ˆ𝑡 𝜒,𝑖 +1
+2 , 𝑖 = 1, 2, . . . , 𝑀 − 1, (17)
+where 𝛽𝑖 is the boundary of the 𝑖-th slot, and 𝑀 is the order of the PPM symbol.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 16 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:15
+In our 4-PPM scheme, each pulse represents a bit pattern and is positioned at a specific time. Ideally, without
+dispersion, these slots are fixed at 0 ns, 50 ns, 100 ns, and 150 ns. However, dispersion effects in underwater
+environments can cause pulses to arrive at the receiver at slightly different time depending on the wavelength of
+the light, leading to potential decoding errors. By employing a dispersion compensation model, slot boundaries
+are dynamically adjusted based on different propagation delays.
+We have characterized the typical dispersion values for different water types (such as pool, sea, and lake) and
+distances (ranging from 0.5 m to 10 m), as shown in Figure 13. The results demonstrate that the dispersion effect
+becomes more pronounced as the communication distance increases. Among the three water types, seawater
+exhibits the highest dispersion due to its highest salt content and particle concentration, followed by lake water
+and pool water. In contrast, pool water has the lowest dispersion effect, as it typically has lower salinity and
+fewer suspended particles compared to seawater and lake water.
+To quantify the performance improvement achieved by the dispersion compensation technique, we compare
+the BER of our proposed scheme with the standard fixed-slot PPM under various water conditions at a fixed
+distance of 5 m. As illustrated in Figure 14, the dispersion-compensated PPM consistently outperforms the
+fixed-slot PPM in all three water types.
+/uni00000014/uni00000014/uni00000014/uni00000013/uni00000013/uni00000014/uni00000014/uni00000013
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000044/uni0000000c/uni00000003/uni00000032/uni00000055/uni0000004c/uni0000004a/uni0000004c/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000025/uni0000004c/uni00000051/uni00000044/uni00000055/uni0000005c/uni00000003/uni00000036/uni00000048/uni00000054/uni00000058/uni00000048/uni00000051/uni00000046/uni00000048
+/uni00000014/uni00000014/uni00000013/uni00000013/uni00000013/uni00000014/uni00000014/uni00000014
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000045/uni0000000c/uni00000003/uni00000038/uni00000051/uni00000047/uni00000048/uni00000055/uni0000005a/uni00000044/uni00000057/uni00000048/uni00000055/uni00000010/uni00000052/uni00000053/uni00000057/uni0000004c/uni00000050/uni0000004c/uni0000005d/uni00000048/uni00000047/uni00000003/uni00000026/uni00000052/uni00000051/uni00000059/uni00000052/uni0000004f/uni00000058/uni00000057/uni0000004c/uni00000052/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000026/uni00000052/uni00000047/uni0000004c/uni00000051/uni0000004a
+/uni00000014/uni00000014/uni00000013/uni00000013/uni00000014/uni00000013/uni00000014/uni00000014/uni00000013/uni00000014
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000046/uni0000000c/uni00000003/uni00000036/uni00000050/uni00000044/uni00000055/uni00000057/uni00000053/uni0000004b/uni00000052/uni00000051/uni00000048/uni00000003/uni00000026/uni00000044/uni00000050/uni00000048/uni00000055/uni00000044/uni00000010/uni00000024/uni0000005a/uni00000044/uni00000055/uni00000048/uni00000003/uni00000035/uni0000002f/uni0000002f/uni00000003/uni00000026/uni00000052/uni00000047/uni0000004c/uni00000051/uni0000004a
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni00000013/uni00000013/uni00000013/uni00000014/uni00000014/uni00000013/uni00000013/uni00000013/uni00000013/uni00000013/uni00000014/uni00000013/uni00000013/uni00000013/uni00000013/uni00000014
+/uni0000000b/uni00000047/uni0000000c/uni00000003/uni00000027/uni0000004c/uni00000056/uni00000053/uni00000048/uni00000055/uni00000056/uni0000004c/uni00000052/uni00000051/uni00000010/uni00000045/uni00000044/uni00000056/uni00000048/uni00000047/uni00000003/uni00000017/uni00000010/uni00000033/uni00000033/uni00000030
+Fig. 15. Encoding process of the U-Flash system.
+The encoding process of the U-Flash system is succinctly depicted in Figure 15. Initially, the input data bits, such
+as ‘11100110’, are processed through underwater-optimized convolutional encoding, resulting in a sequence like
+‘11000111’. This sequence is then subjected to adaptive RLL encoding, which limits the run length of consecutive
+identical bits to reduce flickering, resulting in a sequence like ‘1100101101’. Lastly, the sequence undergoes
+PPM, which adapts each bit to specific time slots to address underwater dispersion, illustrated by a transformed
+sequence ‘0001 1000 0010 0001’ to ensure stability and readability on smartphone cameras, crucial for enhancing
+data transmission robustness in challenging underwater environments.
+4.6 Decoding Scheme
+At the receiver, we propose an innovative decoding scheme that integrates adaptive threshold demodulation,
+dispersion-aware soft-decision decoding, and underwater-optimized Viterbi decoding to ensure reliable and
+efficient recovery of the transmitted data in challenging underwater environments. The decoding process is
+designed to tackle the specific characteristics of the underwater optical channel and the smartphone camera
+receiver.
+4.6.1 Adaptive Threshold Demodulation. Rolling shutter artifacts can cause the RoI to vary in terms of position,
+shape and size. To address this, we proposed the Adaptive Threshold Demodulation scheme that dynamically
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 17 ---
+196:16 • Chi et al.
+adjusts the threshold based on the local statistics of the received signal. In an underwater environment with
+higher dynamics, we can increase the threshold to accommodate more RoI variations, ensuring consistent data
+transmission despite the rolling shutter artifacts.
+The algorithm estimates the local mean and variance of the received signal using a sliding window:
+𝜇𝑖 = 1
+𝑁
+𝑖∑︁
+𝑗=𝑖 −𝑁 +1
+𝑟 𝑗, 𝜎 2
+𝑖 = 1
+𝑁 − 1
+𝑖∑︁
+𝑗=𝑖 −𝑁 +1
+(𝑟 𝑗 − 𝜇𝑖 )2, (18)
+where 𝑟 𝑗 is the 𝑗-th received sample, and 𝑁 is the window size. The window size 𝑁 is carefully chosen to balance
+between local adaptivity and robustness against rolling shutter artifacts. A smaller window allows for quicker
+adaptation to signal variations, while a larger window provides more stability in the presence of image distortions
+caused by rolling shutter effects. Consider a received signal sample path 𝑟 = [0.1, 0.3, 0.9, 0.2, 0.8, 0.4] with a
+window size 𝑁 = 4. For the 𝑖-th sample 𝑟𝑖 = 0.9, the local mean and variance are calculated as 𝜇𝑖 = 0.45 and
+𝜎 2
+𝑖 = 0.1025, respectively.
+The optimal decision threshold is calculated based on the local statistics:
+𝜏𝑖 = 𝜇𝑖 + 𝜔𝜎𝑖, (19)
+where 𝜔 is a parameter that controls the trade-off between missed detections and false alarms. Assuming a
+threshold factor 𝜔 = 1.5, the decision threshold for the 𝑖-th sample is 𝜏𝑖 = 0.45 + 1.5 × 0.32 = 0.93. Since
+𝑟𝑖 = 0.9 < 𝜏𝑖, the binary decision for this sample is 𝛽𝑖 = 0. The received sample 𝑟𝑖 is compared with the threshold
+𝜏𝑖 to obtain the binary decision:
+𝛽𝑖 =
+(
+1, if 𝑟𝑖 ≥ 𝜏𝑖
+0, if 𝑟𝑖 < 𝜏𝑖 . (20)
+We theoretically derive the optimal threshold factor 𝜔 by modeling the received signal as a Gaussian mixture.
+Assuming the received signal follows a Gaussian distribution, i.e., 𝑟𝑖 ∼ N (𝜇0, 𝜎2
+0 ) for bit 0 and 𝑟𝑖 ∼ N (𝜇1, 𝜎2
+1 ) for
+bit 1, the optimal threshold factor is given by:
+𝜔 ∗ = 𝜇1 − 𝜇0
+𝜎1 + 𝜎0
+. (21)
+As shown in Figure 16(a), the received signal (blue line) is compared with the adaptive threshold (red line) to
+determine the binary values. By dynamically adjusting the decision threshold based on local signal statistics, we
+can effectively handle signal variations caused by the dynamic underwater channel and mitigate the effects of
+rolling shutter artifacts.
+4.6.2 Dispersion-aware Soft-decision Decoding. To fully exploit the color dispersion information, we propose a
+dispersion-aware soft-decision decoding algorithm. For each received slot, we first predict the optimal sampling
+instant for each color channel based on the dispersion compensation model:
+ˆ𝑡 𝜒,𝑖 = 𝛽𝑖 −1 + Δ𝑡 𝜒, 𝜒 ∈ { 𝑅, 𝐺, 𝐵}, (22)
+where ˆ𝑡 𝜒,𝑖 represents the predicted optimal sampling instant for color channel 𝜒 in the 𝑖-th slot, 𝛽𝑖 −1 is the start
+boundary of the 𝑖-th slot, and Δ𝑡 𝜒 is the propagation delay of 𝜒 obtained from the dispersion compensation
+model.
+We then sample the received signal of each color channel at its predicted optimal sampling instant and compute
+the soft-decision value 𝑠 𝜒
+𝑖 for each channel:
+𝑠 𝜒
+𝑖 = 𝑟 𝜒 (ˆ𝑡 𝜒,𝑖 ), 𝜒 ∈ { 𝑅, 𝐺, 𝐵}, (23)
+where 𝑟 𝜒 (·) is the received signal strength function, representing the signal intensity of color channel 𝜒 at the
+predicted optimal sampling instant ˆ𝑡 𝜒,𝑖 .
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 18 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:17
+Finally, we combine the soft-decision values of different color channels using weighted averaging to obtain the
+final soft-decision value for the 𝑖-th slot:
+𝑠𝑖 =
+∑︁
+𝜒 ∈ {𝑅,𝐺,𝐵 }
+𝑤 𝜒𝑠 𝜒
+𝑖 , (24)
+where 𝑤 𝜒 represents the weight of 𝜒, the rolling shutter effect has different effects on signals of different colors.
+We thus apply larger weights to those colors less affected by the rolling shutter effect in the soft-decision (0 or 1)
+step, which implicitly accounts for the impact of rolling shutter artifacts.
+As illustrated in Figure 16(b), the received signal is converted into a sequence of soft-decision values, where each
+bar represents the soft-decision value corresponding to a specific time slot. These dispersion-aware soft-decision
+values are then fed into the subsequent Viterbi decoder for demodulation, enabling more accurate decoding by
+leveraging the color dispersion characteristics.
+4.6.3 Underwater-optimized Viterbi Decoding. The Viterbi decoder uses the trellis diagram of the convolutional
+code to find the most likely transmitted bit sequence. We optimize the branch metric calculation of the Viterbi
+algorithm based on the error characteristics of the underwater channel and the soft-decision values obtained
+from the dispersion-aware soft-decision decoding.
+First, we estimate the channel parameters, such as the burst error probability and the average error burst
+length, using the soft-decision value sequence. This can be achieved by employing techniques like maximum
+likelihood estimation [39]. The estimated channel parameters are then used to dynamically adjust the weights 𝑤 1
+and 𝑤 2 in the weighted burst distance metric:
+𝑑 (𝑥𝑖, 𝑦𝑖 ) =
+ 
+
+𝑤 1, if 𝑥𝑖 ≠ 𝑦𝑖 and 𝑥𝑖 −1 = 𝑦𝑖 −1
+𝑤 2, if 𝑥𝑖 ≠ 𝑦𝑖 and 𝑥𝑖 −1 ≠ 𝑦𝑖 −1
+0, if 𝑥𝑖 = 𝑦𝑖,
+(25)
+where 𝑥𝑖 and 𝑦𝑖 are the 𝑖-th bits of the transmitted and received data sequences, respectively. The weights 𝑤 1 and
+𝑤 2 are adaptively adjusted based on the estimated channel parameters, such as increasing 𝑤 2 when the estimated
+burst error probability is high, to better accommodate the burst nature of errors in the underwater channel.
+Furthermore, we modify the branch metric calculation to incorporate the soft-decision values. Instead of using
+hard-decision bits, we compute the branch metrics using the soft-decision values:
+𝛾𝑖 (𝑥𝑖, 𝑦𝑖 ) =
+ 
+
+|𝑠𝑖 − 1| · 𝑤 1, if 𝑥𝑖 ≠ 𝑦𝑖 and 𝑥𝑖 −1 = 𝑦𝑖 −1
+|𝑠𝑖 − 1| · 𝑤 2, if 𝑥𝑖 ≠ 𝑦𝑖 and 𝑥𝑖 −1 ≠ 𝑦𝑖 −1
+|𝑠𝑖 |, if 𝑥𝑖 = 𝑦𝑖,
+(26)
+where 𝑥𝑖 and 𝑦𝑖 are the 𝑖-th bits of the transmitted and received data sequences, respectively. The weights 𝑤 1 and
+𝑤 2 are adaptively adjusted based on the estimated channel parameters as follows:
+𝑤 1 = 1 + 𝛼𝑝𝑏, 𝑤 2 = 1 + 𝛽𝐿𝑏 . (27)
+Typically,𝑤 2 > 𝑤 1 > 0 to reflect a higher penalty for consecutive errors. This adaptive approach allows the
+decoder to better accommodate the burst nature of errors in the underwater channel, increasing 𝑤 2 when the
+estimated burst error probability 𝑝𝑏 or average burst length 𝐿𝑏 is high. This optimization is particularly effective
+in handling burst errors caused by various factors, including rolling shutter artifacts in turbulent underwater
+conditions.
+As depicted in Figure 16(c), the decoded bit sequence (magenta line) is obtained by selecting the bits with the
+highest likelihood in the trellis, based on the optimized branch metric calculation that incorporates both the
+weighted burst distance metric and the soft-decision values. Finally, the original binary path is recovered from
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 19 ---
+196:18 • Chi et al.
+/uni00000013/uni00000014/uni00000015/uni00000016/uni00000017/uni00000018/uni00000019/uni0000001a/uni0000001b/uni0000001c/uni00000014/uni00000013/uni00000014/uni00000014/uni00000014/uni00000015/uni00000014/uni00000016/uni00000014/uni00000017/uni00000014/uni00000018
+/uni00000037/uni0000004c/uni00000050/uni00000048/uni00000012/uni00000036/uni00000044/uni00000050/uni00000053/uni0000004f/uni00000048/uni00000003/uni0000002c/uni00000051/uni00000047/uni00000048/uni0000005b
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000044/uni0000000c/uni00000003/uni00000024/uni00000047/uni00000044/uni00000053/uni00000057/uni0000004c/uni00000059/uni00000048/uni00000003/uni00000037/uni0000004b/uni00000055/uni00000048/uni00000056/uni0000004b/uni00000052/uni0000004f/uni00000047/uni00000003/uni00000027/uni00000048/uni00000050/uni00000052/uni00000047/uni00000058/uni0000004f/uni00000044/uni00000057/uni0000004c/uni00000052/uni00000051
+/uni00000035/uni00000048/uni00000046/uni00000048/uni0000004c/uni00000059/uni00000048/uni00000047/uni00000003/uni00000036/uni0000004c/uni0000004a/uni00000051/uni00000044/uni0000004f
+/uni00000024/uni00000047/uni00000044/uni00000053/uni00000057/uni0000004c/uni00000059/uni00000048/uni00000003/uni00000037/uni0000004b/uni00000055/uni00000048/uni00000056/uni0000004b/uni00000052/uni0000004f/uni00000047
+/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f/uni00000003/uni00000014/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f/uni00000003/uni00000015/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f/uni00000003/uni00000016/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f/uni00000003/uni00000017
+/uni00000033/uni00000033/uni00000030/uni00000003/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f/uni00000056
+/uni00000013/uni00000011/uni00000013
+/uni00000013/uni00000011/uni00000018
+/uni00000014/uni00000011/uni00000013/uni00000036/uni00000052/uni00000049/uni00000057/uni00000003/uni00000027/uni00000048/uni00000046/uni0000004c/uni00000056/uni0000004c/uni00000052/uni00000051/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000045/uni0000000c/uni00000003/uni00000027/uni0000004c/uni00000056/uni00000053/uni00000048/uni00000055/uni00000056/uni0000004c/uni00000052/uni00000051/uni00000010/uni00000044/uni0000005a/uni00000044/uni00000055/uni00000048/uni00000003/uni00000036/uni00000052/uni00000049/uni00000057/uni00000003/uni00000027/uni00000048/uni00000046/uni0000004c/uni00000056/uni0000004c/uni00000052/uni00000051/uni00000003/uni00000027/uni00000048/uni00000046/uni00000052/uni00000047/uni0000004c/uni00000051/uni0000004a
+/uni00000026/uni00000052/uni00000050/uni00000045/uni0000004c/uni00000051/uni00000048/uni00000047/uni00000035/uni0000002a/uni00000025
+/uni00000014 /uni00000015 /uni00000016 /uni00000017
+/uni00000013/uni00000013
+/uni00000013/uni00000014
+/uni00000014/uni00000013
+/uni00000014/uni00000014/uni00000027/uni00000048/uni00000046/uni00000052/uni00000047/uni00000048/uni00000047/uni00000003/uni00000036/uni0000005c/uni00000050/uni00000045/uni00000052/uni0000004f
+/uni0000000b/uni00000046/uni0000000c/uni00000003/uni00000038/uni00000051/uni00000047/uni00000048/uni00000055/uni0000005a/uni00000044/uni00000057/uni00000048/uni00000055/uni00000010/uni00000052/uni00000053/uni00000057/uni0000004c/uni00000050/uni0000004c/uni0000005d/uni00000048/uni00000047/uni00000003/uni00000039/uni0000004c/uni00000057/uni00000048/uni00000055/uni00000045/uni0000004c/uni00000003/uni00000027/uni00000048/uni00000046/uni00000052/uni00000047/uni0000004c/uni00000051/uni0000004a
+/uni00000014/uni00000014/uni00000014/uni00000013/uni00000013/uni00000014/uni00000014/uni00000013
+/uni00000013
+/uni00000014/uni00000025/uni0000004c/uni00000051/uni00000044/uni00000055/uni0000005c/uni00000003/uni00000039/uni00000044/uni0000004f/uni00000058/uni00000048
+/uni0000000b/uni00000047/uni0000000c/uni00000003/uni00000035/uni00000048/uni00000046/uni00000052/uni00000059/uni00000048/uni00000055/uni00000048/uni00000047/uni00000003/uni00000032/uni00000055/uni0000004c/uni0000004a/uni0000004c/uni00000051/uni00000044/uni0000004f/uni00000003/uni00000036/uni00000048/uni00000054/uni00000058/uni00000048/uni00000051/uni00000046/uni00000048
+Fig. 16. Decoding process of the U-Flash system.
+the decoded path, as shown in Figure 16(d). In this example, the recovered original bit sequence is ‘11100110’,
+which matches the original transmitted bit sequence.
+In summary, the U-Flash system’s encoding and decoding schemes are carefully designed to address the unique
+challenges of underwater optical communication using smartphone cameras. By considering the underwater
+channel characteristics, smartphone camera perception, and real-time requirement, the system achieves a balanced
+performance in terms of reliability, data rate, and practicality.
+5 PERFORMANCE EVALUATION AND RESULTS
+5.1 Overall System Performance
+In this section, we evaluate the performance of the proposed U-Flash system using COTS smartphones in
+underwater environments.
+Experiment Setup. The experiments are performed using two Redmi 12C smartphones, one as the transmitter
+with a flash frequency of 180 Hz, and the other as the receiver camera with a frame rate of 30 Hz, as depicted in
+Figure 17(a). Two phones are placed in diving-proof smartphone cases to prevent water damage. As shown in
+Figure 17(b), the smartphones are mounted on adjustable phone holders. Their lengths and orientations can be
+freely adjusted.
+Waterproof case
+Lens plugin
+Swallowtail clamp
+Phone holder
+Fig. 17. Experiment devices.
+Pool
+TX RX
+(b)
+Pool
+TX RX
+(b)
+TX RX
+Sea
+(c)
+TX RX
+Sea
+(c)
+TX RX
+Lake
+(d)
+TX RX
+Lake
+(d)
+Air
+TX RX
+(a)
+Air
+TX RX
+(a) Fig. 18. Experiment environments.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 20 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:19
+Evaluation metrics. We conducted experiments to evaluate U-Flash in terms of the following metrics:
+communication distance, BER, and data rate.
+5.1.1 Performance Comparison: Air vs. Underwater. The scattering effect in underwater environments has a
+significant impact on the performance of the U-Flash system, particularly in terms of communication distance,
+data rate, and BER. As shown in Figure 18(a) and (b), we evaluate the performance of U-Flash in air and underwater
+environments.
+Communication distance. As shown in Figure 19, the communication distance varies significantly across
+different environments. The pool environment achieves the longest distance of 9.8 m, followed by 7.6 m in
+seawater, 4.8 m in lake water, and 2.1 m in air. These results demonstrate that the U-Flash system performs better
+in underwater environments than in air.
+Data rate. The performance comparison across different environments highlights the advantages of the
+U-Flash system in water. As shown in Figure 19, the data rate in all water environments (pool, sea, and lake)
+is significantly higher than that in air especially when the distance exceeds 1 m. In the pool environment, the
+system maintains the maximum rate of 180 bps up to 3 m before gradually decreasing. Seawater shows similar
+performance as pool water at short distances, maintaining 180 bps up to 1 m. The performance in lake water is
+slightly worse but still outperforms that in air. In contrast, the data rate in air decays rapidly, dropping to 30 bps
+at a distance of 2.1 m.
+BER. The BER performance further emphasizes the benefits of underwater communication with the U-Flash
+system. Figure 20 shows that the BER in water environments is consistently lower than that in air. Interestingly,
+at short distances (0-1 m), lake water exhibits the lowest BER. As distance increases, pool water maintains the
+best performance, followed by seawater and then lake water. However, all water environments consistently
+outperform air for all tested distances.
+In summary, the scattering effect in underwater environments plays a crucial role in enhancing the performance
+of the U-Flash system. The scattering effect improves the communication distance by enhancing the directionality
+of photons and improves the data rate by expanding the RoI.
+0.1 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+30
+60
+90
+120
+150
+180
+210Data rate (bps)
+Air
+Pool
+Sea
+Lake
+Fig. 19. Data rate comparison of U-Flash in air, pool,
+lake, and sea.
+0.1 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+ Air
+Pool
+Sea
+Lake
+Fig. 20. BER comparison of U-Flash in air, pool, lake, and
+sea.
+5.1.2 Evaluate the Effect of Each Component.
+Performance Evaluation with Fresnel Lens Plugin: To validate the performance of the custom-designed
+Fresnel lens plugin, we conducted experiments in various environments including air, pool, sea, and lake. As
+shown in Figure 21, the lens plugin extends the underwater communication distance significantly in all water
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 21 ---
+196:20 • Chi et al.
+environments. The improvement is particularly notable in pool, where the range increases from 2.4-4.5 m to
+7.6-9.8 m, representing an improvement over 200%.
+Figures 22-25 demonstrate the effect of the lens plugin on data rate across different environments. In the air
+(Figure 22), the lens plugin enables a stable data rate of 30 bps at distances up to 2 m, compared to rapid decay
+without the plugin. In pool (Figure 23), the system maintains a stable data rate of 150 bps at 4.5 m with the
+plugin, compared to 30 bps without the plugin. Similar improvements are observed in the sea (Figure 24) and lake
+(Figure 25) environments.
+The lens plugin also significantly reduces the BER, as shown in Figures 26-29. In air (Figure 26), the BER
+remains below 2.0 × 10−2 up to 2 m with the plugin. In pool (Figure 27), even at distances approaching 10 m, the
+BER remains below 2.5 × 10−2 with the plugin. Similar improvements are observed in the sea (Figure 28) and lake
+(Figure 29) environments, with the plugin consistently outperforming the non-plugin setup across all distances.
+In summary, the Fresnel lens plugin provides significant performance enhancements for the U-Flash system in
+terms of communication distance, data rate, and BER in all underwater environments.
+Pool Sea Lake Air
+Environment
+0
+2
+4
+6
+8
+10
+12Distance (m)
+W/O lens plugin
+W/ lens plugin
+Fig. 21. Impact of Fresnel lens plugin on
+communication distance.
+0 1 2 3
+Distance (m)
+30
+60
+90
+120
+150
+180
+210Data rate (bps)
+W/ lens plugin
+W/O lens plugin
+Fig. 22. Effect of Fresnel lens plugin on
+data rate in air.
+0 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+30
+60
+90
+120
+150
+180
+210Data rate (bps)
+W/ lens plugin
+W/O lens plugin
+Fig. 23. Effect of Fresnel lens plugin on
+data rate in pool.
+0 1 2 3 4 5 6 7 8
+Distance (m)
+30
+60
+90
+120
+150
+180
+210Data rate (bps)
+W/ lens plugin
+W/O lens plugin
+Fig. 24. Effect of Fresnel lens plugin on
+data rate in sea.
+0 1 2 3 4 5
+Distance (m)
+30
+60
+90
+120
+150
+180
+210Data rate (bps)
+W/ lens plugin
+W/O lens plugin
+Fig. 25. Effect of Fresnel lens plugin on
+data rate in lake.
+0 1 2 3
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+With lens
+Without lens
+Fig. 26. Effect of Fresnel lens plugin on
+BER in air.
+Validation of the Encoding and Decoding Scheme: To validate the effectiveness of our proposed hybrid
+encoding and decoding scheme, we conduct a series of experiments in a pool under varying conditions. The
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 22 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:21
+0 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+With lens
+Without lens
+Fig. 27. Effect of Fresnel lens plugin on
+BER in pool.
+0 1 2 3 4 5 6 7 8
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+With lens
+Without lens
+Fig. 28. Effect of Fresnel lens plugin on
+BER in sea.
+0 1 2 3 4 5
+Distance (m)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+With lens
+Without lens
+Fig. 29. Effect of Fresnel lens plugin on
+BER in lake.
+experiments are designed to evaluate the performance of our system in terms of BER and compare it with the
+baseline system. The pool allows us to test our system in a controlled real environment.
+Experiment settings. To make the pool environment even closer to the environment in the wild, we add
+artificial turbidity to the water using a water pump. We also use a set of submersible LED lamps to introduce
+ambient light interference, mimicking the varying light conditions in real world. Furthermore, we place the
+transmitter and receiver at different distances to study the attenuation and dispersion effects of the underwater
+channel.
+• Baseline. The baseline employs ON-OFF keying (OOK) modulation [13] without hybrid encoding at the
+transmitter. At the receiver, a fixed thresholding method is used for decoding.
+• Our scheme. Our system uses the proposed hybrid encoding scheme at the transmitter, including underwater-
+optimized convolutional coding, smartphone camera-aware RLL, and dispersion-based PPM coding. At
+the receiver, we apply the proposed decoding scheme, which involves adaptive threshold demodulation,
+dispersion-aware soft-decision decoding, and underwater-optimized Viterbi decoding techniques.
+0.1 1 2 3 4 5 6 7 8 9 10
+Distance (m)
+1.0×10−4
+2.0×10−2
+4.0×10−2
+6.0×10−2
+8.0×10−2
+1.0×10−1
+BER
+U-Flash
+Baseline
+Fig. 30. BER comparison of U-Flash and baseline scheme
+at different distances.
+0 100 200 300 400 500 600
+Ambient Light Intensity (lux)
+1.0×10−4
+5.0×10−2
+1.0×10−1
+2.0×10−1
+BER
+U-Flash
+Baseline
+Fig. 31. BER comparison of U-Flash and baseline scheme
+under varying ambient light intensities.
+Figure 30 shows the BER comparison results at varying distances in the pool. Our approach significantly
+reduces the BER at various distances compared to the baseline. Specifically, at a distance of 0.5 m, the achieved
+BER is 6.4 × 10−4 compared to the baseline BER of 1.3 × 10−2, demonstrating a reduction of 95%. As the distance
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 23 ---
+196:22 • Chi et al.
+increases to 9.8 m, our BER remains lower at 2.2 × 10−2 compared to the baseline’s 1.0 × 10−1, indicating a
+reduction of 78%.
+To further validate the effectiveness of our proposed hybrid encoding and decoding scheme under varying
+underwater conditions, we conduct experiments under different ambient light intensities. The ambient light
+intensity at a depth of 10 meters can range from 100 to 500 lux, depending on factors such as weather conditions
+and time of the day [36]. In our experiments, we vary the ambient light intensity from 0 to 600 lux to cover a
+typical range of underwater lighting conditions. In Figure 31, the BER comparison results under varying ambient
+light intensities are presented. For these experiments, we keep the communication distance fixed at 5 m to
+isolate the effect of ambient light on the system performance. Our system demonstrates superior performance
+across all light conditions. At a light intensity of 100 lux, the achieved BER is 2.1 × 10−4 versus the baseline’s
+4.8 × 10−2, reflecting a reduction of 99%. As the light intensity increases to 600 lux, the achieved BER is4.9 × 10−2,
+significantly lower than the baseline’s1.8 × 10−1, indicating a reduction of 72%.
+Our adaptive encoding and tailored decoding scheme significantly enhances the performance of underwater
+communication by dramatically reducing the BER under varying distances and ambient light conditions. The
+proposed approach proves effective in challenging underwater environments.
+5.2 System Robustness
+5.2.1 Impact of Water Condition. To further validate the reliability of U-Flash, we conduct extensive experiments
+in various underwater environments, including a pool, sea, and a turbid lake, as shown in Figure 18(b), (c), and
+(d), respectively. These diverse water conditions allowed us to comprehensively evaluate the system’s robustness
+and adaptability under different levels of turbidity and ambient light interference.
+Interestingly, at a short communication distance of 1 m (Figure 32), the BER in the sea and lake is lower
+than that in the pool during both day and night. This counter-intuitive result can be attributed to the beneficial
+scattering effect in turbid water, which helps focus the light beam and expand the RoI at the receiver. However,
+as the communication distance further increases to 5 m (Figure 33), the attenuation effect of the turbid water
+becomes more dominant, leading to higher BER in the sea and lake compared to that in the pool.
+The ambient light condition also plays a crucial role in the system’s performance. In all three water conditions,
+the BER at night is consistently lower than that during the day at both 1 m and 5 m. This is because the strong
+ambient sunlight during the day introduces interference, reducing the SNR and making it harder to detect the
+LED signal accurately. In contrast, the weaker ambient light at night allows the camera to capture the LED signal
+with less interference and higher SNR.
+Despite the challenges posed by the various water conditions and ambient light, the U-Flash system demon-
+strates robust performance, maintaining a BER on the order of 2.5 × 10−2 at a distance of 5 m in the sea and
+lake environments. Moreover, the system can benefit from the scattering effect in water, especially at short
+distances. These experiment results highlight the adaptability and resilience of the U-Flash system in diverse
+underwater environments. The proposed system can operate effectively under various water conditions and
+lighting scenarios, making it a promising solution for underwater optical communication using smartphones.
+5.2.2 Impact of Water Depth. Understanding the impact of water depth on underwater optical communication is
+crucial for practical deployment. Due to the constraints of real-world experimentation at larger depths, we utilize
+simulation and experiments to assess the system performance at different depths, as shown in Figure 34. Our
+simulation model incorporates factors such as a decrease in ambient light interference with an increasing depth.
+The simulation results show a consistent improvement in communication distance with an increasing depth. At a
+shallow depth of 1 m, the communication distance is limited to approximately 6 m. As the depth increased to 60 m,
+the predicted communication distance is increased to around 15 m. The model further suggests that beyond 60 m,
+the rate of improvement on communication distance with depth becomes limited. To validate these simulation
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 24 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:23
+Pool Sea Lake
+Water Types
+1.0×10−5
+5.0×10−5
+1.0×10−4
+BER
+Day
+Night
+Fig. 32. BER of U-Flash under different
+water conditions at 1 m: day vs. night.
+Pool Sea Lake
+Water Types
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+Day
+Night
+Fig. 33. BER of U-Flash under different
+water conditions at 5 m: day vs. night.
+0 20 40 60 80 100
+Depth (m)
+4
+6
+8
+10
+12
+14
+16Distance (m)
+0 2 4
+6
+8
+10
+ Detail: 1-5 meters
+Simulated Experiment
+Real Experiment
+Fig. 34. Impact of water depth on
+the communication distance.
+findings, we conducted experiments in a diving pool with a maximum depth of 5 m. The experiment results
+closely match the simulation predictions within this depth range. At a depth of 1 m, we record a communication
+distance of 5.5 m. When the depth is increased to 5 m, the communication distance is increased to 8.5 m.
+These results indicate that a larger depth favors underwater optical communication, as the reduced ambient
+light interference at greater depths can enhance signal transmission and extend the communication distance.
+5.2.3 Impact of Incident Angle. In underwater optical communication, the incident angle of light is a crucial factor
+that can significantly influence signal propagation and system performance. To further investigate the impact
+of incident angle on communication performance, experiments are conducted during both daytime and night
+conditions, as the incident light intensity can significantly affect optical signal reception. We systematically vary
+the angle between the transmitter and receiver from 0◦ to 30◦ and measure the corresponding communication
+distance, data rate, and BER.
+We measure the maximum distance at different angles in Figure 35. The maximum distance is defined as the
+largest distance that can still maintain a BER lower than 1.0 × 10−2. The communication distance decreases as
+the incident angle increases, which is more obvious during the day. This indicates that alignment affects the
+communication distance, especially in the presence of ambient day light.
+0 10 20 30
+Angle (°)
+0
+2
+4
+6
+8
+10
+12Distance (m)
+Day
+Night
+Fig. 35. Distance vs. Angle.
+0 10 20 30
+Angle (°)
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180Data rate (bps)
+Day
+Night Fig. 36. Data Rate vs. Angle.
+0 10 20 30
+Angle (°)
+1.0×10−4
+5.0×10−3
+1.0×10−2
+1.5×10−2
+2.0×10−2
+2.5×10−2
+BER
+Day
+Night Fig. 37. BER vs. Angle.
+Figure 36 shows the variation of data rate with respect to the incident angle at a fixed communication distance
+of 5 m. The data rate gradually decreases as the angle increases from 0◦ to 30◦. Night conditions consistently
+show higher data rates compared to daytime across 0◦ to 20◦. At 30◦, the data rates for both day and night are
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 25 ---
+196:24 • Chi et al.
+reduced to around 30 bps. Figure 37 illustrates the BER’s dependency on the incident angle. Notably, the BER 
+remains below 2.5 × 10−2 for angles up to 30◦ at a distance of 5 m for a transmission rate of 30 bps.
+The experiments demonstrate that the proposed system can tolerate a certain degree of angle misalignment, 
+which is important for its deployment in real-world underwater environments.
+5.3 Other Factors
+5.3.1 Different S martphones. We compare the performance of U-Flash on four different brands of smartphones 
+in Table 2. We observe that the data rate is mainly influenced by two factors: the frequency of the flashlight and 
+the camera frame rate of the smartphone.
+Table 2. Parameters of different smartphones.
+Name Redmi 12C Redmi K60 Samsung Galaxy S21 Ultra Xiaomi 14
+Frame rate (fps) 30 60 120 240
+Communication distance (m) 9.8 10.1 10.4 10.8
+Data rate (bps) 180 360 720 1440
+Power (% per hour) 6 5 5 5
+In our experiment, the frequency of the flashlight remains the same. However, the frame rate of the camera
+varies among the four smartphones, which significantly affects the maximum data rate. As depicted in Table2, the
+smartphones with higher frame rates, such as the Samsung Galaxy S21 Ultra and Xiaomi 14, which feature 120 fps
+and 240 fps, respectively, are capable of achieving higher data rates, i.e., 720 bps and 1440 bps, respectively. This is
+much higher than Redmi 12C with a frame rate of 30 fps and a data rate of 180 bps. The maximum communication
+distances across different smartphones show only slight differences, suggesting that smartphone diversity has a
+small impact on this metric.
+Additionally, we measure the power consumption of using the flash for optical communication with different
+smartphones. After the four smartphones transmit the same content continuously for one hour, the battery drain
+is 6%, 5%, 5% and 5%, respectively. Since divers typically can not work in water for a long time (a maximum of 90
+minutes in most cases) [18], the power consumption of the proposed system is acceptable.
+5.3.2 Cost. The U-Flash system is designed to be affordable. The custom-designed Fresnel lens plugin, made
+from low-cost material (epoxy resin) and fabricated using 3D printing, costs less than $3 per unit (Table 3). The
+smartphones used in the system are COTS devices and low-end smartphone models ($100) still work well.
+Table 3. Component Cost.
+Component Description Cost ($)
+Fresnel Lens 44 mm square, 80 mm focal length 1.00
+Mirrors Two 45-degree angled 0.20
+Housing 3D printed, high-strength epoxy resin 1.00
+Coatings Primer, reflective top coat, sealant 0.20
+Total 2.40
+Encoding Decoding Total0
+100
+200
+300
+400Memory Usage (MB)
+Memory Usage (MB)
+Latency (s)
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Latency (s)
+Fig. 38. Overhead.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 26 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:25
+5.3.3 Computational Overhead and Latency. Ensuring minimal computational overhead and latency is crucial for
+the U-Flash system’s practicality in resource-constrained underwater environments. As shown in Figure 38, the
+encoding and decoding processes require approximately 150 MB and 200 MB of memory, respectively, which
+is well within the capabilities of modern smartphones. The extremely high propagation speed of light in water
+renders the propagation delay negligible. The primary contributors to latency are the encoding (0.2 seconds)
+and decoding (0.5 seconds) processes. The total latency of 0.7 seconds is acceptable for practical underwater
+applications.
+5.4 Comparison with State-of-the-Art Systems
+We compare our system with two recent state-of-the-art solutions based on smartphones: the acoustic-based
+system by Chen et al. [5] and the optical QR code-based system UQRCom [31]. Table 4 presents the comparison.
+While the acoustic-based system can achieve a long distance in the water, i.e., 30 m, the data rate is limited
+to 1.8 kbps. Furthermore, the acoustic-based system requires the user to touch the screen to trigger message
+transmission. We notice that in an underwater environment, touching the screen is a challenging task due to the
+water pressure on the screen.
+Table 4. Comparison of U-Flash with recent underwater communication systems.
+U-Flash Chen et al. [5] UQRCom [31]
+Communication Range 9.8 m 30 m 4.7-7.6 m (using smartphone)
+Data Rate 180 bps2 100-1800 bps 6.9-13.6 kbps
+Error Rate 2.2% @ 9.8m 3.8% @ 30m 2% @ 7.6m
+Does not Require Screen Touch ✓ - -
+Turbidity Resistance ✓ ✓ -
+UQRCom achieves a data rate of 13.6 kbps and a distance of 7.6 m. However, a major limitation of UQRCom
+is that its communication distance is constrained by the size of the QR code displayed on the device screen.
+This limitation restricts the maximum communication distance that can be achieved with commonly seen small
+portable devices such as smartphones. Additionally, QR code scanning requires both the transmitter and receiver
+to remain stationary during the process. The constant water dynamics in real life make it challenging to meet
+this requirement. Our system can maintain communication integrity even in turbid and dynamic underwater
+environments.
+6 RELATED WORK
+Underwater wireless communication has been an active research topic for decades, with a wide spectrum of
+techniques proposed to address the unique challenges of the underwater environment.
+Acoustic communication. Underwater acoustic communication remains the most widely adopted technique
+due to its long transmission range [1, 5, 48, 49]. However, it suffers from limited bandwidth, high latency, and
+sonic pollution. The data rate is typically constrained to tens of kbps over kilometers, and the devices are usually
+expensive and large in size [30, 59].
+RF communication. Radio frequency (RF) communication has a very limited propagation range in water due
+to severe attenuation. It can only work over very short distances up to tens of centimeters [6, 44]. Technologies
+such as underwater RF coils have been proposed to achieve slightly longer distances (e.g., 1-2 m) [9, 19].
+2A data rate of 14.40 kbps can be achieved using a cheap external LED plugin.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 27 ---
+196:26 • Chi et al.
+Optical communication. Underwater optical wireless communication has attracted growing interest due to
+its potential for high data rates and low latency. Various approaches have been investigated:
+a) Photodiode-based systems: Lin et al. [27] propose the Shrimp system, which uses a blue LED as the signal
+source and achieves data rates up to 200 kbps over distances up to 3 meters. In this work, we employ the phone
+camera as the receiver to enable optical communication on smartphones. The dramatically different characteristics
+of phone cameras bring unique challenges and also benefits (e.g., a larger communication distance in water) to
+our system. Popoola et al. [41] further adopt laser for underwater optical wireless communication. While the high
+focused power of the laser can support a high data rate of gigabits per second, it requires precise alignment of
+the laser beam with the receiver, which is extremely difficult in an underwater environment with a tremendous
+amount of flow motions.
+b) Camera-based systems: Teli et al . [52] present an underwater optical communication system using a
+smartphone camera as the receiver, achieving data rates of 1280 bps over short distances (i.e., less than 18 cm).
+Majlesein et al. [32] use a CMOS image sensor for underwater optical communication, achieving data rates up to
+24 bps in 2 meters. Our proposed system significantly increases the communication distance to 9.8 m, breaking
+the boundaries of the state-of-the-arts.
+c) QR-code-based system: Liu et al. [31] propose to use customized QR codes for underwater communication.
+The communication distance can reach up to 7.6 meters when a high-quality smartphone camera and a large
+screen for QR code display are employed. The data rate ranges from 6.9 kbps to 13.6 kbps, depending on water
+clarity. However, the device needs to be relatively stationary to effectively scan the QR code, which can be
+challenging in real-world underwater environments.
+U-Flash enables flexible underwater optical communication with only commercial smartphones. It leverages the
+scattering effect to boost communication performance in turbid water which is challenging for other techniques.
+Substantial improvements on range, data rate, and reliability are achieved over existing underwater optical
+communication solutions.
+7 DISCUSSION
+Limited Camera Flash Rate: The primary limitation of the proposed U-Flash system is the low flash rate of
+the smartphone’s camera, which is designed for photography rather than communication. To achieve a higher
+data rate, we can employ an external LED plugin to work with a smartphone to support a higher flash rate. As
+shown in Figure 39(a), we developed a customized LED module which can achieve a flash rate higher than 10 kHz.
+The LED module has a size of 3 cm × 3 cm and can be powered by the smartphone’s USB port as depicted in
+Figure 39(b). The developed LED module can help increase the communication distance to 15 m and the data rate
+to 14.4 kbps in a pool environment. Note that the data rate can be further increased with a high-end LED capable
+of flashing at a frequency on the scale of megahertz.
+Device Mobility: In real-life applications, the device can be moving together with the diver or underwater
+robot. In this case, the main challenge is to point the light beam at the receiver for effective communication.
+There is actually a trade off between communication distance and the coverage angle to accommodate mobility.
+We need to focus the light to a narrower beam to achieve a longer distance. However, a narrower beam means
+a more strict spatial alignment requirement and a lower ability to accommodate device mobility. Therefore, a
+potential strategy is to adaptively tune the beam width through the Fresnel lens plugin based on the device
+velocity which can be measured by IMU sensors in the smartphones. When mobility is detected, the beam width
+can be increased and a narrower beam can be adopted when the transceivers are relatively stationary.
+Varying Performance Across Smartphone Models: Our current design tries to fully utilize each device’s
+communication capability. As the frame rate is a key factor deciding the communication data rate and the frame
+rate varies across phone models, the communication performance also varies. To achieve consistent performance
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 28 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:27
+(a) (b) 
+Otg adapter
+LED
+Fig. 39. Plug and play transmitter light plugin.
+across different phone models, we can either configure the Fresnel lens plugin (hardware) or adjust the software.
+For a smartphone camera with a lower frame rate, we can configure the Fresnel lens with a shorter focal length to
+produce more concentrated light beams, increasing the light intensity. The higher light intensity can compensate
+for the data rate decrease due to lower frame rates. In software, we can down-sample the higher frame rates to the
+basic data rate (i.e., 30 samples per second) supported by all smartphones, enabling a standardized performance
+across a broader range of smartphones. However, this operation underutilizes the communication capacity of
+smartphones with a higher camera frame rate.
+Extremely High Turbidity: While our system demonstrates that turbidity can surprisingly help increase the
+communication distance, we want to point out that extremely high turbidity is still harmful to communication.
+This is because when the turbidity keeps increasing, the effect of scattering gradually saturates and the effect of
+attenuation becomes dominating, degrading the performance eventually.
+Waterproof Case Type: Waterproof case plays an important role in our system. Commonly seen waterproof
+cases can be grouped into three categories, i.e., (i) silicone case which works for a depth up to 5 m, (ii) plastic
+case which works for a depth up to 10 m, and (iii) polycarbonate case which works for a depth up to 10-50 m.
+The waterproof cases usually also feature high-clarity transparent windows with very little light intensity loss
+for the camera and flash to work. Chen et al. [5] reported that the performance of acoustic-based systems was
+significantly affected by case types, with hard plastic cases achieving the best performance and minimal signal
+attenuation. We found that our proposed approach based on light signals is less influenced by the waterproof case
+type, as the high-transparent case widow can provide a clear optical path for the camera and flash. We do note
+that the ambient light interference which varies with depth affects the performance of our system. Specifically, a
+larger depth with less ambient light interference can lead to better communication performance. Therefore, a
+waterproof case which can work at larger depths can help the proposed system achieve better performance in
+deeper water.
+8 CONCLUSIONS
+·22In this paper, we implemented U-Flash, an underwater optical communication system using only COTS
+smartphones. The key innovation is that the water scattering effect, typically deemed harmful for communication
+in air, can be exploited to enhance communication performance in water. This phenomenon is thoroughly
+modeled and experimentally verified. Moreover, we employed a Fresnel lens to further extend the transmission
+distance. Efficient encoding and decoding schemes were also tailored to deal with the unique challenges in
+underwater environment. Through building an end-to-end prototype and comprehensive evaluations, we showed
+that U-Flash achieved substantial improvements in communication range, data rate, and reliability compared
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 29 ---
+196:28 • Chi et al.
+to existing solutions. We believe the design of U-Flash can inspire follow-up research in underwater wireless 
+communication.
+ACKNOWLEDGMENTS
+This work was supported by the National Natural Science Foundation of China under Grant No.62172069 and 
+62027826. This work is also supported by Dalian Science and Technology Talent Innovation Support Program 
+(2022RG04) and Fundamental Research Funds for the Central Universities under Grant DUT24ZD209.
+REFERENCES
+[1] Stefano Basagni, Valerio Di Valerio, Petrika Gjanci, and Chiara Petrioli. 2017. Finding MARLIN: Exploiting multi-modal communications
+for reliable and low-latency underwater networking. In IEEE INFOCOM. 1–9.
+[2] Craig F. Bohren and Donald R. Huffman. 2008. Absorption and scattering of light by small particles.
+[3] Hendrik Buiteveld, JHM Hakvoort, and Marcel Donze. 1994. Optical properties of pure water. In Ocean Optics XII, Vol. 2258. 174–183.
+[4] Honglan Chen, Xinwei Chen, Jie Lu, Xiaoyan Liu, Jiarong Shi, Lirong Zheng, Ran Liu, Xiaolin Zhou, and Pengfei Tian. 2020. Toward
+long-distance underwater wireless optical communication based on a high-sensitivity single photon avalanche diode. IEEE Photonics
+Journal 12, 3 (2020), 1–10.
+[5] Tuochao Chen, Justin Chan, and Shyamnath Gollakota. 2022. Underwater messaging using mobile devices. InACM SIGCOMM. 545–559.
+[6] Brandon M Cochenour, Linda J Mullen, and Alan E Laux. 2008. Characterization of the beam-spread function for underwater wireless
+optical communications links. IEEE Journal of Oceanic Engineering 33, 4 (2008), 513–521.
+[7] Haipeng Ding, Gang Chen, Arun K Majumdar, Brian M Sadler, and Zhengyuan Xu. 2009. Modeling of non-line-of-sight ultraviolet
+scattering channels for communication. IEEE journal on selected areas in communications 27, 9 (2009), 1535–1544.
+[8] John Ryan C Dizon, Alejandro H Espera Jr, Qiyi Chen, and Rigoberto C Advincula. 2018. Mechanical characterization of 3D-printed
+polymers. Additive Manufacturing 20 (2018), 44–67.
+[9] Yuhan Dong, Xuelong Mi, and Yiqing Zhou. 2016. Spatial channel model for underwater wireless optical communication links. In ACM
+WUWNet. 1–2.
+[10] Abbas El Gamal and Helmy Eltoukhy. 2005. CMOS image sensors. IEEE Circuits and Devices Magazine 21, 3 (2005), 6–20.
+[11] Ander Galisteo, Diego Juara, and Domenico Giustiniano. 2019. Research in visible light communication systems with OpenVLC1. 3. In
+WF-IoT. 539–544.
+[12] Zabih Ghassemlooy, Wasiu Popoola, and Sujan Rajbhandari. 2019. Optical wireless communications: system and channel modelling with
+Matlab®. CRC press.
+[13] Liane Grobe, Anagnostis Paraskevopoulos, Jonas Hilt, Dominic Schulz, Friedrich Lassak, Florian Hartlieb, Christoph Kottke, Volker
+Jungnickel, and Klaus-Dieter Langer. 2013. High-speed visible light communication systems. IEEE Communications Magazine 51, 12
+(2013), 60–66.
+[14] Luchi Hua, Yuan Zhuang, You Li, Qin Wang, Bingpeng Zhou, Longning Qi, Jun Yang, Yue Cao, and Harald Haas. 2021. FusionVLP: The
+fusion of photodiode and camera for visible light positioning. IEEE Transactions on Vehicular Technology 70, 11 (2021), 11796–11811.
+[15] MA Islam. 2004. Einstein–Smoluchowski diffusion equation: a discussion. Physica Scripta 70, 2-3 (2004), 120.
+[16] Sermsak Jaruwatanadilok. 2008. Underwater wireless optical communication channel modeling and performance evaluation using
+vector radiative transfer theory. IEEE Journal on selected areas in communications 26, 9 (2008), 1620–1627.
+[17] Laura J Johnson, Faezah Jasman, Roger J Green, and Mark S Leeson. 2014. Recent advances in underwater optical wireless communications.
+Underwater Technology 32, 3 (2014), 167–175.
+[18] James T Joiner. 2001. NOAA diving manual: Diving for science and technology.
+[19] Brian Kelley and Krishna Naishadham. 2013. RF multicarrier signaling and antenna systems for low SNR broadband underwater
+communications. In WiSNet. 169–171.
+[20] Alexander A Kokhanovsky. 2008. Aerosol optics: light absorption and scattering by particles in the atmosphere . Springer Science & Business
+Media.
+[21] Karim Koreitem, Jimmy Li, Ian Karp, Travis Manderson, and Gregory Dudek. 2019. Underwater communication using full-body gestures
+and optimal variable-length prefix codes. In ICRA. 8018–8025.
+[22] Vinod Kumar, RL Shrivastava, and SP Untawale. 2015. Fresnel lens: A promising alternative of reflectors in concentrated solar power.
+Renewable and Sustainable Energy Reviews 44 (2015), 376–390.
+[23] Nikolay Kyurkchiev and Svetoslav Markov. 2016. On the Hausdorff distance between the Heaviside step function and Verhulst logistic
+function. Journal of Mathematical Chemistry 54, 1 (2016), 109–119.
+[24] Hoa Le Minh, Dominic O’Brien, Grahame Faulkner, Lubin Zeng, Kyungwoo Lee, Daekwang Jung, YunJe Oh, and Eun Tae Won. 2009.
+100-Mb/s NRZ visible light communications using a postequalized white LED.IEEE Photonics Technology Letters 21, 15 (2009), 1063–1065.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 30 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:29
+[25] Kang-Won Lee, Seung-Chan Kim, and Soo-Chul Lim. 2022. DeepTouch: Enabling touch interaction in underwater environments by
+learning touch-induced inertial motions. IEEE Sensors Journal 22, 9 (2022), 8924–8932.
+[26] Xinge Li, Xiaoya Hu, Rongqing Zhang, and Liuqing Yang. 2020. Routing Protocol Design for Underwater Optical Wireless Sensor
+Networks: A Multiagent Reinforcement Learning Approach. IEEE Internet of Things Journal 7, 10 (2020), 9805–9818.
+[27] Chi Lin, Yongda Yu, Jie Xiong, Yichuan Zhang, Lei Wang, Guowei Wu, and Zhongxuan Luo. 2021. Shrimp: a robust underwater visible
+light communication system. In ACM MobiCom. 134–146.
+[28] Anliang Liu, Ruolin Zhang, Bin Lin, and Hongxi Yin. 2022. Multi-degree-of-freedom for underwater optical wireless communication
+with improved transmission performance. Journal of Marine Science and Engineering 11, 1 (2022), 48.
+[29] Quanhua Liu and Fuzhong Weng. 2006. Combined henyey-greenstein and rayleigh phase function. Applied Optics 45, 28 (2006),
+7475–7479.
+[30] Shengxing Liu and Chienchung Shen. 2016. Impact of sea waves on performance of shallow water acoustic communications. In IEEE
+COA. 1–5.
+[31] Xinyang Liu, Lei Wang, Jie Xiong, Chi Lin, Xinhua Gao, Jiale Li, and Yibo Wang. 2023. Uqrcom: Underwater wireless communication
+based on qr code. ACM Ubicomp 6, 4 (2023), 1–22.
+[32] Behnaz Majlesein, Vicente Matus, Cristo Jurado-Verdu, Victor Guerra, Jose Rabadan, and Julio Rufo. 2022. Experimental characterization
+of sub-pixel underwater optical camera communications. In CSNDSP. 150–155.
+[33] Valerio Mante, Robert A Frazor, Vincent Bonin, Wilson S Geisler, and Matteo Carandini. 2005. Independence of luminance and contrast
+in natural scenes and in the early visual system. Nature neuroscience 8, 12 (2005), 1690–1697.
+[34] Farshad Miramirkhani, Mehdi Karbalayghareh, and Murat Uysal. 2021. Effect of scattering phase function on underwater visible light
+communication channel models. Physical Communication 48 (2021), 101410.
+[35] Curtis D. Mobley. 1994. Light and water: Radiative transfer in natural waters.
+[36] Curtis D Mobley, Bernard Gentili, Howard R Gordon, Zhonghai Jin, George W Kattawar, Andre Morel, Phillip Reinersman, Knut
+Stamnes, and Robert H Stavn. 1993. Comparison of numerical models for computing underwater light fields. Applied Optics 32, 36
+(1993), 7484–7504.
+[37] Trang Nguyen, Amirul Islam, and Yeong Min Jang. 2016. Region-of-interest signaling vehicular system using optical camera communi-
+cations. IEEE Photonics Journal 9, 1 (2016), 1–20.
+[38] Jiewen Nie, Lei Tian, Feng Zhang, Xiaobo Li, and Haining Yang. 2022. Parametric hologram optimization for enhanced underwater
+wireless optical communication. Optics Express 30, 13 (2022), 23967–23977.
+[39] Jian-Xin Pan, Kai-Tai Fang, Jian-Xin Pan, and Kai-Tai Fang. 2002. Maximum likelihood estimation. Growth curve models and statistical
+diagnostics (2002), 77–158.
+[40] Parth H Pathak, Xiaotao Feng, Pengfei Hu, and Prasant Mohapatra. 2015. Visible light communication, networking, and sensing: A
+survey, potential and challenges. IEEE communications surveys & tutorials 17, 4 (2015), 2047–2077.
+[41] Wasiu Popoola, Egecan Guler, Jianming Wang, and Callum Geldard. 2021. Gbps underwater optical wireless communication in turbulence
+and random sea surface. In MobiSys. 21–26.
+[42] Charles Poynton. 2012. Digital video and HD: Algorithms and Interfaces. Elsevier.
+[43] John G Proakis and Masoud Salehi. 2008. Digital communications. McGraw-hill.
+[44] Christian Renner, Benjamin Meyer, Daniel Bimschas, Alexander Gabrecht, Sebastian Ebers, Thomas Tosik, Ammar Amory, Erik Maehle,
+and Stefan Fischer. 2014. Hybrid underwater environmental monitoring. In ACM SenSys. 340–341.
+[45] Nasir Saeed, Abdulkadir Celik, Tareq Y Al-Naffouri, and Mohamed-Slim Alouini. 2018. Underwater optical sensor networks localization
+with limited connectivity. In ICASSP. 3804–3808.
+[46] John Smith and Jane Doe. 2020. Advanced Image Processing Techniques for Analyzing Underwater ROI. Journal of Optical Communica-
+tions 34, 3 (2020), 205–215.
+[47] Matthew Stafford, Adriana Rogers, Shela Wu, Charles Carver, N Sertac Artan, and Ziqian Dong. 2017. Tetris: Smartphone-to-smartphone
+screen-based visible light communication. In MASS. 570–574.
+[48] Milica Stojanovic. 2007. On the relationship between capacity and distance in an underwater acoustic communication channel. ACM
+SIGMOBILE Mobile Computing and Communications Review 11, 4 (2007), 34–43.
+[49] Milica Stojanovic and James Preisig. 2009. Underwater acoustic communication channels: Propagation models and statistical characteri-
+zation. IEEE Communications Magazine 47, 1 (2009), 84–89.
+[50] Donald F Swinehart. 1962. The beer-lambert law. Journal of Chemical Education 39, 7 (1962), 333–335.
+[51] Shijian Tang, Yuhan Dong, and Xuedan Zhang. 2013. Impulse response modeling for underwater wireless optical communication links.
+IEEE transactions on communications 62, 1 (2013), 226–234.
+[52] Shivani Teli, Willy Anugrah Cahyadi, and Yeon Ho Chung. 2017. Optical camera communication: Motion over camera. IEEE Communi-
+cations Magazine 55, 8 (2017), 156–162.
+[53] Lihong Wang and Steven L Jacques. 1993. Hybrid model of Monte Carlo simulation and diffusion theory for light reflectance by turbid
+media. JOSA A 10, 8 (1993), 1746–1752.
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 31 ---
+196:30 • Chi et al.
+[54] Günther Wyszecki and Walter Stanley Stiles. 2000. Color science: concepts and methods, quantitative data and formulae . Vol. 40. John
+wiley & sons.
+[55] WT Xie, YJ Dai, RZ Wang, and K Sumathy. 2011. Concentrated solar energy applications using Fresnel lenses: A review. Renewable and
+Sustainable Energy Reviews 15, 6 (2011), 2588–2606.
+[56] Hanting Ye, Jie Xiong, and Qing Wang. 2023. When VLC Meets Under-Screen Camera. In MobiSys. 343–355.
+[57] Andrew T Young. 1981. Rayleigh scattering. Applied optics 20, 4 (1981), 533–535.
+[58] Min Zhao. 2022. The Application of iFLYTEK FiF Speaking Training System in Language Learning. In MLNLP. 175–178.
+[59] Zhao Zhao, Chunfeng Liu, Wenyu Qu, and Tao Yu. 2020. An energy efficiency multi-level transmission strategy based on underwater
+multimodal communication in UWSNs. In IEEE INFOCOM. 1579–1587.
+[60] Shijie Zhu, Xinwei Chen, Xiaoyan Liu, Guoqi Zhang, and Pengfei Tian. 2020. Recent progress in and perspectives of underwater wireless
+optical communication. Progress in Quantum Electronics 8, 3 (2020), 100274–100301.
+A DETAILED DERIVATION OF SCATTERING COEFFICIENTS
+In this appendix, we provide detailed derivations for the Mie and Rayleigh scattering coefficients used in our
+underwater optical communication model.
+A.1 Mie Scattering Coefficient
+For particles with sizes comparable to or larger than the wavelength of light, Mie scattering theory applies [2].
+The Mie scattering coefficient is given by:
+𝑏Mie = 3
+2
+𝜙
+𝜌𝑟 𝑄sca, (28)
+where 𝜙 is the volume fraction of particles, 𝜌 is the particle density, 𝑟 is the particle radius, and 𝑄sca is the
+scattering efficiency factor [35].
+The scattering efficiency factor 𝑄sca is a function of the size parameter 𝑥 = 2𝜋𝑟 /𝜆 and the relative refractive
+index 𝑚 = 𝑛particle/𝑛water. It can be calculated using Mie theory, which involves complex calculations with Bessel
+functions and Legendre polynomials [2].
+A.2 Rayleigh Scattering Coefficient
+For particles much smaller than the wavelength of light, Rayleigh scattering theory applies [57]. The Rayleigh
+scattering coefficient is given by:
+𝑏Rayleigh = 8𝜋 3
+3𝜆4
+ 𝑛2 − 1
+𝑛2 + 2
+ 2
+𝛽𝑚, (29)
+where 𝜆 is the wavelength of light in the medium, 𝑛 is the refractive index of water, and 𝛽𝑚 is the molecular
+scattering coefficient [3].
+The molecular scattering coefficient 𝛽𝑚 can be approximated using the Einstein-Smoluchowski formula [15]:
+𝛽𝑚 = 2𝜋 2𝑘𝐵𝑇 𝛽2
+𝑇
+3 , (30)
+where 𝑘𝐵 is the Boltzmann constant, 𝑇 is the absolute temperature, and 𝛽𝑇 is the isothermal compressibility of
+water.
+A.3 Henyey-Greenstein Phase Function
+To characterize the angular distribution of scattered light, we employ the Henyey-Greenstein (HG) phase function
+[29]:
+𝑝 (𝜃 ) = 1 − 𝑔2
+4𝜋 (1 + 𝑔2 − 2𝑔 cos 𝜃 )3/2 , (31)
+where 𝜃 is the scattering angle, and 𝑔 is the anisotropy factor (−1 ≤ 𝑔 ≤ 1).
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+
+--- Page 32 ---
+U-Flash: Improving Underwater Optical Communication by Scattering Effect • 196:31
+The HG phase function is related to the scattering coefficients through the volume scattering function 𝛽 (𝜃 ):
+𝛽 (𝜃 ) = 𝑏 ·𝑝 (𝜃 ), (32)
+where 𝑏 is the total scattering coefficient (sum of Mie and Rayleigh scattering coefficients).
+The anisotropy factor 𝑔 can be calculated as the average cosine of the scattering angle [20]:
+𝑔 = ⟨cos 𝜃 ⟩ =
+∫ 𝜋
+0
+cos 𝜃 ·𝑝 (𝜃 ) · 2𝜋 sin 𝜃 𝑑𝜃 . (33)
+The value of 𝑔 influences the scattering-dependent spreading factor 𝑘 used in the RoI calculations [16]:
+𝑘 = 𝑏 (1 − 𝑔). (34)
+B DETAILED DERIVATION OF ROI SIZE
+This appendix provides a detailed derivation of the RoI size equation used in our underwater optical communica-
+tion model.
+B.1 Light Propagation Model
+We begin our analysis with a modified Gaussian beam propagation model in a scattering medium [ 53]. The
+intensity distribution of the light beam is described by the following equation:
+𝐼 (𝑟, 𝑑) = 𝐼0
+ 𝑤 0
+𝑤 (𝑑)
+ 2
+exp
+
+− 2𝑟 2
+𝑤 (𝑑)2
+
+exp(−𝑐𝑑) [1 − exp(−𝑏𝑑)], (35)
+where 𝐼0 represents the initial intensity of the beam, and 𝑤 0 is the initial beam waist. The term 𝑤 (𝑑) = 𝑤 0 + 𝑘𝑑 𝛼
+describes the modified beam width at a distance 𝑑, where 𝑘 is a scattering-dependent spreading factor and 𝛼 is
+the non-linear scattering exponent (0 < 𝛼 < 1) [16]. The radial distance from the beam center is denoted by 𝑟.
+The attenuation coefficient 𝑐 accounts for the overall loss of light intensity with distance, while the scattering
+coefficient 𝑏 contributes to the redistribution of light. The term [1 − exp(−𝑏𝑑)] represents the contribution of
+scattering to the intensity, which increases rapidly at short distances and then saturates.
+B.2 RoI Size Derivation
+To derive the RoI size, we define the edge of the RoI as the point where the total intensity equals the camera
+sensitivity threshold 𝐼𝑡ℎ [40]:
+𝐼total (𝑟𝑅𝑜𝐼 , 𝑑) = 𝐼𝑡ℎ . (36)
+Using the total light intensity equation provided in the main text, we solve this equation for 𝑟𝑅𝑜𝐼 :
+𝑟 2
+𝑅𝑜𝐼 = (𝜎0 + 𝑘𝑑 𝛼 )2
+
+ln
+ 𝐼0
+𝐼𝑡ℎ
+
+− 𝑐𝑑 + ln(1 + 𝑏 (1 − exp(−𝑏𝑑)))
+
+. (37)
+The RoI size is then calculated as the area of this circle:
+RoI(𝑑) = 𝜋𝑟 2
+𝑅𝑜𝐼 = 𝜋 (𝜎0 + 𝑘𝑑 𝛼 )2
+
+ln
+ 𝐼0
+𝐼𝑡ℎ
+
+− 𝑐𝑑 + ln(1 + 𝑏 (1 − exp(−𝑏𝑑)))
+
+. (38)
+To account for the camera sensitivity threshold and simplify the expression, we introduce the Heaviside step
+function 𝐻 () [23]. This leads to our final RoI size equation:
+RoI(𝑑) = 2𝜋 (𝜎0 + 𝑘𝑑 𝛼 )2 · (1 − exp(−𝑏𝑑)) · 𝐻 (𝐼total (𝑑) − 𝐼𝑡ℎ ). (39)
+Proc. ACM Interact. Mob. Wearable Ubiquitous Technol., Vol. 8, No. 4, Article 196. Publication date: December 2024.
+

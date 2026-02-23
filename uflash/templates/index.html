@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#040d1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="U-Flash — Underwater Smartphone Optical Communication System. Transmit data through water using smartphone flashlights and cameras.">
+    <title>U-Flash — Underwater Optical Communication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="bubble bubble-4"></div>
+        <div class="bubble bubble-5"></div>
+        <div class="light-ray ray-1"></div>
+        <div class="light-ray ray-2"></div>
+        <div class="light-ray ray-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-bar-left">16:32</div>
+            <div class="status-bar-right">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div class="app-title">
+                <h1>U-Flash</h1>
+                <p>Underwater Optical Comm.</p>
+            </div>
+            <div class="header-status" id="headerStatus">
+                <span class="status-dot"></span>
+                <span>Ready</span>
+            </div>
+        </header>
+
+        <!-- Screens -->
+        <div class="screens-wrapper">
+
+            <!-- ===== HOME SCREEN ===== -->
+            <div class="screen active" id="screenHome">
+                <!-- Hero -->
+                <div class="hero-section">
+                    <div class="hero-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                    </div>
+                    <h2 class="hero-title">U-Flash Simulator</h2>
+                    <p class="hero-subtitle">Underwater smartphone optical communication system using LED flashlight modulation and camera-based decoding</p>
+                    <div class="hero-badges">
+                        <span class="hero-badge cyan">180 Hz PPM</span>
+                        <span class="hero-badge teal">FEC Coding</span>
+                        <span class="hero-badge purple">ML Prediction</span>
+                    </div>
+                </div>
+
+                <!-- System Stats -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value">180</div>
+                        <div class="stat-label">Data Rate (bps)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">10m</div>
+                        <div class="stat-label">Max Range</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">&lt;10⁻⁵</div>
+                        <div class="stat-label">Target BER</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="switchTab('transmit')">
+                        <div class="action-icon cyan">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </div>
+                        <span class="action-label">Send Message</span>
+                        <span class="action-desc">Transmit data underwater</span>
+                    </button>
+                    <button class="action-btn" onclick="switchTab('transmit'); setTimeout(() => document.getElementById('sweepBtn').click(), 300)">
+                        <div class="action-icon teal">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>
+                        </div>
+                        <span class="action-label">BER Analysis</span>
+                        <span class="action-desc">Distance sweep test</span>
+                    </button>
+                    <button class="action-btn" onclick="switchTab('settings')">
+                        <div class="action-icon purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                        </div>
+                        <span class="action-label">Settings</span>
+                        <span class="action-desc">Channel configuration</span>
+                    </button>
+                    <button class="action-btn" onclick="switchTab('about')">
+                        <div class="action-icon amber">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        </div>
+                        <span class="action-label">Architecture</span>
+                        <span class="action-desc">System overview</span>
+                    </button>
+                </div>
+
+                <!-- Features -->
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Key Innovations
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">🌊</div>
+                            <div class="feature-info">
+                                <h4>Scattering as an Asset</h4>
+                                <p>Water scattering enhances camera-based optical communication range</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🛡️</div>
+                            <div class="feature-info">
+                                <h4>Multi-Layer FEC</h4>
+                                <p>Convolutional + Reed-Solomon + Interleaving for burst error correction</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📱</div>
+                            <div class="feature-info">
+                                <h4>IMU Motion Compensation</h4>
+                                <p>Madgwick filter for handheld stability with 2-5× BER reduction</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🧠</div>
+                            <div class="feature-info">
+                                <h4>ML Channel Prediction</h4>
+                                <p>LSTM model predicts channel quality 5-10s ahead for adaptive FEC</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🧪</div>
+                            <div class="feature-info">
+                                <h4>Water Quality Estimation</h4>
+                                <p>Dual-purpose: data transmission + turbidity/NTU measurement</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TRANSMIT SCREEN ===== -->
+            <div class="screen" id="screenTransmit">
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Transmission Control
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="control-group">
+                        <label>Message</label>
+                        <textarea id="messageInput" rows="2" placeholder="Enter message to transmit...">Hello Underwater World!</textarea>
+                    </div>
+
+                    <!-- Water Type -->
+                    <div class="control-group">
+                        <label>🌊 Water Type</label>
+                        <div class="select-group">
+                            <button class="select-btn active" data-value="clear" data-param="water_type">Clear</button>
+                            <button class="select-btn" data-value="coastal" data-param="water_type">Coastal</button>
+                            <button class="select-btn" data-value="harbor" data-param="water_type">Harbor</button>
+                            <button class="select-btn" data-value="turbid" data-param="water_type">Turbid</button>
+                        </div>
+                    </div>
+
+                    <!-- Distance & Depth -->
+                    <div class="control-row">
+                        <div class="control-group">
+                            <label>📏 Distance <span id="distVal" class="val-display">5.0m</span></label>
+                            <input type="range" id="distSlider" min="0.5" max="15" step="0.5" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label>⬇️ Depth <span id="depthVal" class="val-display">3.0m</span></label>
+                            <input type="range" id="depthSlider" min="0.5" max="30" step="0.5" value="3">
+                        </div>
+                    </div>
+
+                    <!-- Ambient Light & Motion -->
+                    <div class="control-row">
+                        <div class="control-group">
+                            <label>☀️ Light <span id="luxVal" class="val-display">500 lux</span></label>
+                            <input type="range" id="luxSlider" min="0" max="5000" step="50" value="500">
+                        </div>
+                        <div class="control-group">
+                            <label>📱 Motion</label>
+                            <select id="motionSelect">
+                                <option value="stationary">Stationary</option>
+                                <option value="handheld" selected>Handheld</option>
+                                <option value="walking">Walking</option>
+                                <option value="swimming">Swimming</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Transmit Button -->
+                    <button id="transmitBtn" class="btn-primary pulse">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Transmit
+                    </button>
+
+                    <!-- BER Sweep Button -->
+                    <button id="sweepBtn" class="btn-secondary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>
+                        Run BER Sweep
+                    </button>
+                </div>
+
+                <!-- Pipeline Stages -->
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        Processing Pipeline
+                    </div>
+                    <div class="pipeline-stages" id="pipelineStages">
+                        <div class="stage-card" id="stageRLL">
+                            <div class="stage-header">
+                                <span class="stage-icon">🔤</span>
+                                <span class="stage-name">RLL Encoder</span>
+                                <span class="stage-badge" id="rllBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="rllDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stageConv">
+                            <div class="stage-header">
+                                <span class="stage-icon">🛡️</span>
+                                <span class="stage-name">Conv. Encoder</span>
+                                <span class="stage-badge" id="convBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="convDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stageInterleaver">
+                            <div class="stage-header">
+                                <span class="stage-icon">🔀</span>
+                                <span class="stage-name">Interleaver</span>
+                                <span class="stage-badge" id="intBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="intDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stagePPM">
+                            <div class="stage-header">
+                                <span class="stage-icon">💡</span>
+                                <span class="stage-name">PPM Modulator</span>
+                                <span class="stage-badge" id="ppmBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="ppmDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stageChannel">
+                            <div class="stage-header">
+                                <span class="stage-icon">🌊</span>
+                                <span class="stage-name">Underwater Channel</span>
+                                <span class="stage-badge channel" id="chBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="chDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stageMotion">
+                            <div class="stage-header">
+                                <span class="stage-icon">📱</span>
+                                <span class="stage-name">Motion Comp.</span>
+                                <span class="stage-badge" id="motionBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="motionDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stageWQ">
+                            <div class="stage-header">
+                                <span class="stage-icon">🧪</span>
+                                <span class="stage-name">Water Quality</span>
+                                <span class="stage-badge" id="wqBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="wqDetail">Awaiting transmission...</div>
+                        </div>
+                        <div class="stage-card" id="stagePredict">
+                            <div class="stage-header">
+                                <span class="stage-icon">🧠</span>
+                                <span class="stage-name">ML Predictor</span>
+                                <span class="stage-badge" id="mlBadge">—</span>
+                            </div>
+                            <div class="stage-detail" id="mlDetail">Awaiting transmission...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RESULTS SCREEN ===== -->
+            <div class="screen" id="screenResults">
+                <!-- Result Banner -->
+                <div id="resultBanner" class="result-banner hidden">
+                    <div class="result-icon" id="resultIcon">✓</div>
+                    <div>
+                        <div class="result-label" id="resultLabel">Transmission Successful</div>
+                        <div class="result-detail" id="resultDetail">BER: 0.00e+00 | 0 bit errors | 12.5ms</div>
+                    </div>
+                </div>
+
+                <!-- Decoded Message -->
+                <div class="output-box" id="outputBox">
+                    <label>Decoded Message</label>
+                    <div class="decoded-text" id="decodedText">—</div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="metrics-grid" id="metricsGrid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricBER">—</div>
+                        <div class="metric-label">Bit Error Rate</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricSNR">—</div>
+                        <div class="metric-label">SNR (dB)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricFEC">—</div>
+                        <div class="metric-label">FEC Mode</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricRate">—</div>
+                        <div class="metric-label">Data Rate (bps)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricQuality">—</div>
+                        <div class="metric-label">Channel Quality</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="metricLatency">—</div>
+                        <div class="metric-label">Latency (ms)</div>
+                    </div>
+                </div>
+
+                <!-- Waveform Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Transmitted vs Received Waveform</h3>
+                    <canvas id="waveformChart"></canvas>
+                </div>
+
+                <!-- BER Sweep Chart -->
+                <div class="chart-container" id="sweepContainer" style="display:none;">
+                    <h3 class="chart-title">BER vs Distance</h3>
+                    <canvas id="berChart"></canvas>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="resultsEmpty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    <h3>No Results Yet</h3>
+                    <p>Go to Transmit tab to send a message through the underwater channel</p>
+                </div>
+            </div>
+
+            <!-- ===== SETTINGS SCREEN ===== -->
+            <div class="screen" id="screenSettings">
+                <div class="settings-group">
+                    <div class="settings-group-title">Channel Configuration</div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🌊</div>
+                            <div class="settings-item-text">
+                                <h4>Water Type</h4>
+                                <p>Current water condition</p>
+                            </div>
+                        </div>
+                        <span class="settings-value" id="settWaterType">coastal</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">📏</div>
+                            <div class="settings-item-text">
+                                <h4>Distance</h4>
+                                <p>Tx–Rx separation</p>
+                            </div>
+                        </div>
+                        <span class="settings-value" id="settDistance">5.0 m</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">⬇️</div>
+                            <div class="settings-item-text">
+                                <h4>Depth</h4>
+                                <p>Underwater depth</p>
+                            </div>
+                        </div>
+                        <span class="settings-value" id="settDepth">3.0 m</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">☀️</div>
+                            <div class="settings-item-text">
+                                <h4>Ambient Light</h4>
+                                <p>Interference level</p>
+                            </div>
+                        </div>
+                        <span class="settings-value" id="settLux">500 lux</span>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="settings-group-title">FEC Configuration</div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🛡️</div>
+                            <div class="settings-item-text">
+                                <h4>FEC Mode</h4>
+                                <p>Forward Error Correction</p>
+                            </div>
+                        </div>
+                        <span class="settings-value" id="settFEC">Adaptive</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🔀</div>
+                            <div class="settings-item-text">
+                                <h4>Interleaver Depth</h4>
+                                <p>Burst error protection</p>
+                            </div>
+                        </div>
+                        <span class="settings-value">20 frames</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">📊</div>
+                            <div class="settings-item-text">
+                                <h4>Convolutional Code</h4>
+                                <p>K=7, rate=1/2</p>
+                            </div>
+                        </div>
+                        <span class="settings-value">Viterbi</span>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">💎</div>
+                            <div class="settings-item-text">
+                                <h4>Reed-Solomon</h4>
+                                <p>RS(255, 223)</p>
+                            </div>
+                        </div>
+                        <span class="settings-value">16 sym</span>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="settings-group-title">Advanced Features</div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">📱</div>
+                            <div class="settings-item-text">
+                                <h4>IMU Compensation</h4>
+                                <p>Motion artifact correction</p>
+                            </div>
+                        </div>
+                        <div class="toggle active" id="toggleIMU" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🧪</div>
+                            <div class="settings-item-text">
+                                <h4>Water Quality Est.</h4>
+                                <p>NTU measurement via RoI</p>
+                            </div>
+                        </div>
+                        <div class="toggle active" id="toggleWQ" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🧠</div>
+                            <div class="settings-item-text">
+                                <h4>ML Channel Prediction</h4>
+                                <p>LSTM-based quality forecast</p>
+                            </div>
+                        </div>
+                        <div class="toggle active" id="toggleML" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-info">
+                            <div class="settings-item-icon">🌈</div>
+                            <div class="settings-item-text">
+                                <h4>Dispersion Compensation</h4>
+                                <p>Chromatic dispersion correction</p>
+                            </div>
+                        </div>
+                        <div class="toggle active" id="toggleDisp" onclick="this.classList.toggle('active')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ABOUT SCREEN ===== -->
+            <div class="screen" id="screenAbout">
+                <div class="about-header">
+                    <h2>U-Flash System</h2>
+                    <p>Underwater Smartphone-to-Smartphone Optical Communication System inspired by the U-Flash architecture (ACM IMWUT 2024)</p>
+                    <div class="about-version">v1.0.0 • Hackathon Edition</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Transmission Pipeline
+                    </div>
+                    <div class="arch-flow">
+                        <div class="arch-step">
+                            <div class="arch-step-num">1</div>
+                            <div class="arch-step-info">
+                                <h4>Text Input</h4>
+                                <p>UTF-8 text → binary bit stream</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">2</div>
+                            <div class="arch-step-info">
+                                <h4>RLL Encoding</h4>
+                                <p>Run-Length Limited coding for flicker reduction</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">3</div>
+                            <div class="arch-step-info">
+                                <h4>FEC Encoding</h4>
+                                <p>Convolutional + Reed-Solomon error correction</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">4</div>
+                            <div class="arch-step-info">
+                                <h4>Interleaving</h4>
+                                <p>Block interleaver (depth=20) for burst errors</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">5</div>
+                            <div class="arch-step-info">
+                                <h4>PPM Modulation</h4>
+                                <p>4-PPM at 180 Hz via smartphone LED</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">6</div>
+                            <div class="arch-step-info">
+                                <h4>Underwater Channel</h4>
+                                <p>Beer-Lambert absorption + Gilbert-Elliott errors</p>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">↓</div>
+                        <div class="arch-step">
+                            <div class="arch-step-num">7</div>
+                            <div class="arch-step-info">
+                                <h4>Camera Decode</h4>
+                                <p>Rolling-shutter stripe extraction + Viterbi decoder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                        Tech Stack
+                    </div>
+                    <div class="tech-grid">
+                        <div class="tech-item"><span class="tech-emoji">🐍</span>Python</div>
+                        <div class="tech-item"><span class="tech-emoji">📊</span>NumPy</div>
+                        <div class="tech-item"><span class="tech-emoji">🌐</span>Flask</div>
+                        <div class="tech-item"><span class="tech-emoji">📱</span>Camera2</div>
+                        <div class="tech-item"><span class="tech-emoji">👁️</span>OpenCV</div>
+                        <div class="tech-item"><span class="tech-emoji">🧠</span>TF Lite</div>
+                        <div class="tech-item"><span class="tech-emoji">🎨</span>Jetpack</div>
+                        <div class="tech-item"><span class="tech-emoji">📡</span>BLE</div>
+                        <div class="tech-item"><span class="tech-emoji">🔧</span>JNI/NDK</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        Applications
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">🤿</div>
+                            <div class="feature-info">
+                                <h4>Diver-to-Diver Messaging</h4>
+                                <p>Text communication up to 10m underwater</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🌡️</div>
+                            <div class="feature-info">
+                                <h4>Underwater IoT Sensors</h4>
+                                <p>Temperature, pressure, and chemical telemetry</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🤖</div>
+                            <div class="feature-info">
+                                <h4>AUV Data Offload</h4>
+                                <p>Autonomous vehicle mission data transfer</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🔬</div>
+                            <div class="feature-info">
+                                <h4>Environmental Monitoring</h4>
+                                <p>Real-time water quality + data transmission</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+                        References
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">📄</div>
+                            <div class="feature-info">
+                                <h4>U-Flash (ACM IMWUT 2024)</h4>
+                                <p>Chi et al. — Improving Underwater Optical Communication by Scattering Effect</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📄</div>
+                            <div class="feature-info">
+                                <h4>Kaushal & Kaddoum (IEEE 2016)</h4>
+                                <p>Underwater Optical Wireless Communication</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-tab="transmit" onclick="switchTab('transmit')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                <span>Transmit</span>
+            </button>
+            <button class="nav-item" data-tab="results" onclick="switchTab('results')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-3 3"/></svg>
+                <span>Results</span>
+            </button>
+            <button class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <span>Settings</span>
+            </button>
+            <button class="nav-item" data-tab="about" onclick="switchTab('about')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span>About</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
