@@ -1,9 +1,9 @@
 # Project Proposal: DeepLink (U-Flash)
 **High-Reliability Underwater Optical Camera Communication (OCC) via Scattering Optimization, Sensor Fusion, & Temporal Diversity**
 
-**Team Name:** [Your Team Name]
-**Team Members:** [Your Names]
-**Repository:** [github.com/adit-tambe/Hackenza2026_LaundeOverflow](https://github.com/adit-tambe/Hackenza2026_LaundeOverflow)
+**Team Name:** Launde Overflow
+**Team Members:** Adit, Samyagya, Chitraksh, Vinit
+**Repository:** (https://github.com/adit-tambe/Hackenza2026_LaundeOverflow)
 
 ---
 
